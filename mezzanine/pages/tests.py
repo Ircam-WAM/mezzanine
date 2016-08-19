@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+
+from django.contrib.sites.models import Site
 from future.builtins import str
 
 from unittest import skipUnless
@@ -20,6 +22,7 @@ from mezzanine.core.request import current_request
 from mezzanine.pages.models import Page, RichTextPage
 from mezzanine.pages.admin import PageAdminForm
 from mezzanine.urls import PAGES_SLUG
+from mezzanine.utils.sites import current_site_id
 from mezzanine.utils.tests import TestCase
 
 
@@ -374,3 +377,12 @@ class PagesTests(TestCase):
         submitted_form = TestPageAdminForm(data=data)
         self.assertTrue(submitted_form.is_valid())
         self.assertEqual(submitted_form.cleaned_data['slug'], 'hello/world')
+
+    def test_ascendants_different_site(self):
+        site2 = Site.objects.create(domain='site2.example.com', name='Site 2')
+        parent = RichTextPage.objects.create(title="Parent", site=site2)
+        child = RichTextPage.objects.create(
+            title="Child", site=site2, parent=parent
+        )
+        self.assertNotEqual(current_site_id(), site2.id)
+        self.assertListEqual(child.get_ascendants(), [parent])
