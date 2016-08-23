@@ -19,7 +19,7 @@
 			doNotClear: false,
 			expandOnHover: 700,
 			isAllowed: function(placeholder, placeholderParent, originalItem) { return true; },
-			isTree: false,
+			// isTree: false,
 			listType: 'ol',
 			maxLevels: 0,
 			protectRoot: false,
@@ -222,7 +222,7 @@
 			var newList = document.createElement(o.listType);
 
 			this.beyondMaxLevels = 0;
-			
+
 			// mjs - if the item is moved to the left, send it one level up but only if it's at the bottom of the list
 			if (parentItem != null && nextItem == null &&
 					(o.rtl && (this.positionAbs.left + this.helper.outerWidth() > parentItem.offset().left + parentItem.outerWidth()) ||
@@ -477,7 +477,7 @@
 
 			if (this.options.listType) {
 				var list = item.closest(this.options.listType);
-				while (list && list.length > 0 && 
+				while (list && list.length > 0 &&
                     	!list.is('.ui-sortable')) {
 					level++;
 					list = list.parent().closest(this.options.listType);
