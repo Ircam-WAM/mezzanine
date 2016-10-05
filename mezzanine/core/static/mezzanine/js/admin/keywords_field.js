@@ -9,9 +9,12 @@ jQuery(function($) {
     // the keyword's existance in the associated input box.
     $('.keywords-field a').click(function() {
         var field = $(this).parent().prev('input[type=text]');
-        var keywords = $.map(field.attr('value').split(','), function(keyword) {
-            return $.trim(keyword);
-        });
+        keywords = [""];
+        if (field.attr('value')!==undefined) {
+            var keywords = $.map(field.attr('value').split(','), function(keyword) {
+                return $.trim(keyword);
+            });
+        }
         var keywords = $.grep(keywords, function(keyword) {
             return keyword.length > 0;
         });
