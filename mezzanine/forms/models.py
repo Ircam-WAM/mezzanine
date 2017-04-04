@@ -48,12 +48,11 @@ class FieldManager(models.Manager):
 
 
 @python_2_unicode_compatible
-class Field(Orderable):
+class AbstractBaseField(Orderable):
     """
     A field for a user-built form.
     """
 
-    form = models.ForeignKey("Form", related_name="fields")
     label = models.CharField(_("Label"),
         max_length=settings.FORMS_LABEL_MAX_LENGTH)
     field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
@@ -71,9 +70,9 @@ class Field(Orderable):
     objects = FieldManager()
 
     class Meta:
+        abstract = True
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        order_with_respect_to = "form"
 
     def __str__(self):
         return self.label
@@ -109,12 +108,21 @@ class Field(Orderable):
         return self.field_type in args
 
 
+class Field(AbstractBaseField):
+    form = models.ForeignKey("Form", on_delete=models.CASCADE,
+        related_name="fields")
+
+    class Meta(AbstractBaseField.Meta):
+        order_with_respect_to = "form"
+
+
 class FormEntry(models.Model):
     """
     An entry submitted via a user-built form.
     """
 
-    form = models.ForeignKey("Form", related_name="entries")
+    form = models.ForeignKey("Form", on_delete=models.CASCADE,
+        related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
 
     class Meta:
@@ -127,7 +135,8 @@ class FieldEntry(models.Model):
     A single field value for a form entry submitted via a user-built form.
     """
 
-    entry = models.ForeignKey("FormEntry", related_name="fields")
+    entry = models.ForeignKey("FormEntry", on_delete=models.CASCADE,
+        related_name="fields")
     field_id = models.IntegerField()
     value = models.CharField(max_length=settings.FORMS_FIELD_MAX_LENGTH,
                              null=True)

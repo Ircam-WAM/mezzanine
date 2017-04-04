@@ -6,6 +6,8 @@ from unittest import skipUnless
 from mezzanine.core.middleware import FetchFromCacheMiddleware
 from mezzanine.core.templatetags.mezzanine_tags import initialize_nevercache
 from mezzanine.utils.cache import cache_installed
+from mezzanine.utils.sites import current_site_id, override_current_site_id
+from mezzanine.utils.urls import admin_url
 
 try:
     # Python 3
@@ -19,6 +21,7 @@ from django.contrib.admin import AdminSite
 from django.contrib.admin.options import InlineModelAdmin
 from django.contrib.sites.models import Site
 from django.core import mail
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms import Textarea
@@ -32,13 +35,13 @@ from django.utils.html import strip_tags
 
 from mezzanine.conf import settings
 from mezzanine.core.admin import BaseDynamicInlineAdmin
-from mezzanine.core.fields import RichTextField
+from mezzanine.core.fields import RichTextField, MultiChoiceField
 from mezzanine.core.managers import DisplayableManager
 from mezzanine.core.models import (CONTENT_STATUS_DRAFT,
                                    CONTENT_STATUS_PUBLISHED)
 from mezzanine.forms.admin import FieldAdmin
 from mezzanine.forms.models import Form
-from mezzanine.pages.models import RichTextPage
+from mezzanine.pages.models import Page, RichTextPage
 from mezzanine.utils.importing import import_dotted_path
 from mezzanine.utils.tests import (TestCase, run_pyflakes_for_package,
                                              run_pep8_for_package)
@@ -559,6 +562,12 @@ class SiteRelatedTestCase(TestCase):
         site1.delete()
         site2.delete()
 
+    def test_override_site_id(self):
+        self.assertEqual(current_site_id(), 1)
+        with override_current_site_id(2):
+            self.assertEqual(current_site_id(), 2)
+        self.assertEqual(current_site_id(), 1)
+
 
 class CSRFTestViews(object):
     def nevercache_view(request):
@@ -616,3 +625,62 @@ class CSRFTestCase(TestCase):
         # The CSRF cookie should be present
         csrf_cookie = response.cookies.get(settings.CSRF_COOKIE_NAME, False)
         self.assertNotEqual(csrf_cookie, False)
+
+
+class ContentTypedTestCase(TestCase):
+
+    def test_set_content_model_base_concrete_class(self):
+        page = Page.objects.create()
+        page.set_content_model()
+        self.assertEqual(page.content_model, None)
+        self.assertIs(page.get_content_model(), page)
+
+    def test_set_content_model_subclass(self):
+        richtextpage = RichTextPage.objects.create()
+        richtextpage.set_content_model()
+        page = Page.objects.get(pk=richtextpage.pk)
+        self.assertEqual(page.content_model, 'richtextpage')
+        self.assertEqual(page.get_content_model(), richtextpage)
+
+    def test_set_content_model_again(self):
+        """
+        Content model cannot change after initial save.
+
+        That's the only time we'll know for certain that the __class__ is the
+        lowest class in the hierarchy. Of course, content_model will keep
+        getting set to None for base concrete classes, which is confusing but
+        not necessarily a problem.
+        """
+        richtextpage = RichTextPage.objects.create()
+        richtextpage.set_content_model()
+        page = Page.objects.get(pk=richtextpage.pk)
+        self.assertEqual(page.content_model, 'richtextpage')
+        self.assertEqual(page.get_content_model(), richtextpage)
+        page.set_content_model()
+        self.assertEqual(page.content_model, 'richtextpage')
+        self.assertEqual(page.get_content_model(), richtextpage)
+
+    def test_contenttyped_admin_redirects(self):
+        self.client.login(username=self._username, password=self._password)
+
+        # Unsubclassed objects should not redirect
+        page = Page.objects.create(title="Test page")
+        response = self.client.get(admin_url(Page, "change", page.pk))
+        self.assertEqual(response.status_code, 200)
+
+        # Subclassed objects should redirect to the admin for child class
+        richtext = RichTextPage.objects.create(title="Test rich text")
+        response = self.client.get(admin_url(Page, "change", richtext.pk))
+        richtext_change_url = admin_url(RichTextPage, "change", richtext.pk)
+        self.assertRedirects(response, richtext_change_url)
+
+
+class FieldsTestCase(TestCase):
+    def test_multichoicefield_validate_valid(self):
+        field = MultiChoiceField(choices=[('valid choice',)])
+        field.validate(['valid choice'], None)
+
+    def test_multichoicefield_validate_invalid(self):
+        field = MultiChoiceField(choices=[('valid choice',)])
+        with self.assertRaises(ValidationError):
+            field.validate(['invalid choice'], None)

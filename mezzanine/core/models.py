@@ -46,7 +46,8 @@ class SiteRelated(models.Model):
     class Meta:
         abstract = True
 
-    site = models.ForeignKey("sites.Site", editable=False)
+    site = models.ForeignKey("sites.Site", on_delete=models.CASCADE,
+        editable=False)
 
     def save(self, update_site=False, *args, **kwargs):
         """
@@ -300,11 +301,11 @@ class Displayable(Slugged, MetaData, TimeStamped):
         permanently store ``get_absolute_url``, since it may change
         over time.
         """
-        if self.short_url == SHORT_URL_UNSET:
-            self.short_url = self.get_absolute_url_with_host()
-        elif not self.short_url:
+        if not self.short_url or self.short_url == SHORT_URL_UNSET:
             self.short_url = self.generate_short_url()
             self.save()
+        if self.short_url == SHORT_URL_UNSET:
+            self.short_url = self.get_absolute_url_with_host()
 
     def generate_short_url(self):
         """
@@ -485,8 +486,8 @@ class Ownable(models.Model):
     Abstract model that provides ownership of an object for a user.
     """
 
-    user = models.ForeignKey(user_model_name, verbose_name=_("Author"),
-        related_name="%(class)ss")
+    user = models.ForeignKey(user_model_name, on_delete=models.CASCADE,
+        verbose_name=_("Author"), related_name="%(class)ss")
 
     class Meta:
         abstract = True
@@ -504,6 +505,7 @@ class ContentTyped(models.Model):
     In order to use them:
 
     - Inherit model from ContentTyped.
+    - Call the set_content_model() method in the model's save() method.
     - Inherit that model's ModelAdmin from ContentTypesAdmin.
     - Include "admin/includes/content_typed_change_list.html" in the
     change_list.html template.
@@ -515,6 +517,10 @@ class ContentTyped(models.Model):
 
     @classmethod
     def get_content_model_name(cls):
+        """
+        Return the name of the OneToOneField django automatically creates for
+        child classes in multi-table inheritance.
+        """
         return cls._meta.object_name.lower()
 
     @classmethod
@@ -524,8 +530,23 @@ class ContentTyped(models.Model):
         return [m for m in apps.get_models()
                 if m is not concrete_model and issubclass(m, concrete_model)]
 
+    def set_content_model(self):
+        """
+        Set content_model to the child class's related name, or None if this is
+        the base class.
+        """
+        if not self.content_model:
+            is_base_class = (
+                base_concrete_model(ContentTyped, self) == self.__class__)
+            self.content_model = (
+                None if is_base_class else self.get_content_model_name())
+
     def get_content_model(self):
-        return getattr(self, self.content_model, None)
+        """
+        Return content model, or if this is the base class return it.
+        """
+        return (getattr(self, self.content_model) if self.content_model
+                else self)
 
 
 class SitePermission(models.Model):
@@ -535,8 +556,8 @@ class SitePermission(models.Model):
     access.
     """
 
-    user = models.OneToOneField(user_model_name, verbose_name=_("Author"),
-        related_name="%(class)ss")
+    user = models.OneToOneField(user_model_name, on_delete=models.CASCADE,
+        verbose_name=_("Author"), related_name="%(class)ss")
     sites = models.ManyToManyField("sites.Site", blank=True,
                                    verbose_name=_("Sites"))
 
