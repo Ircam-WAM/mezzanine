@@ -406,7 +406,7 @@ def thumbnail(
     if image.mode not in ("P", "L", "RGBA") and filetype not in ("JPG", "JPEG"):
         try:
             image = image.convert("RGBA")
-        except:  # noqa
+        except Exception:
             return image_url
     # Required for progressive jpgs.
     ImageFile.MAXBLOCK = 2 * (max(image.size) ** 2)
@@ -427,7 +427,7 @@ def thumbnail(
             pad_top = 0
             pad_left = (pad_width - from_width) // 2
         if pad_size is not None:
-            pad_container = Image.new("RGBA", pad_size, padding_color)
+            pad_container = Image.new(image.mode, pad_size, padding_color)
             pad_container.paste(image, (pad_left, pad_top))
             image = pad_container
 
