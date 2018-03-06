@@ -44,9 +44,10 @@ class TinyMceWidget(forms.Textarea):
     """
 
     class Media:
-        js = (static("mezzanine/tinymce/tinymce.min.js"),
-              static(settings.TINYMCE_SETUP_JS))
-        css = {'all': (static("mezzanine/tinymce/tinymce.css"),)}
+        js = [static("mezzanine/tinymce/tinymce.min.js"),
+              static("mezzanine/tinymce/jquery.tinymce.min.js"),
+              static(settings.TINYMCE_SETUP_JS)]
+        css = {'all': [static("mezzanine/tinymce/tinymce.css")]}
 
     def __init__(self, *args, **kwargs):
         super(TinyMceWidget, self).__init__(*args, **kwargs)
@@ -96,6 +97,8 @@ class CheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     """
     Wraps render with a CSS class for styling.
     """
+    dont_use_model_field_default_for_empty_data = True
+
     def render(self, *args, **kwargs):
         rendered = super(CheckboxSelectMultiple, self).render(*args, **kwargs)
         return mark_safe("<span class='multicheckbox'>%s</span>" % rendered)
