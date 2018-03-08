@@ -287,6 +287,25 @@ class SearchableManager(Manager):
         super(SearchableManager, self).contribute_to_class(model, name)
         setattr(model, name, ManagerDescriptor(self))
 
+    def __get_models_from_string(self, set_of_objects, setting_str):
+        """
+        Look up for models from string
+        set_of_objects : set()
+        models : tuple of full models name
+        """
+        errors = []
+        for name in getattr(settings, setting_str):
+            try:
+                model = apps.get_model(*name.split(".", 1))
+            except LookupError:
+                errors.append(name)
+            else:
+                set_of_objects.add(model)
+        if errors:
+            raise ImproperlyConfigured("Could not load the model(s) "
+                    "%s defined in the '" + setting_str + "' setting."
+                    % ", ".join(errors))
+
     def search(self, *args, **kwargs):
         """
         Proxy to queryset's search method for the manager's model and
@@ -311,20 +330,12 @@ class SearchableManager(Manager):
             # model when determining whether a model falls within the
             # ``SEARCH_MODEL_CHOICES`` setting.
             search_choices = set()
+            search_parents = set()
             models = set()
             parents = set()
-            errors = []
-            for name in settings.SEARCH_MODEL_CHOICES:
-                try:
-                    model = apps.get_model(*name.split(".", 1))
-                except LookupError:
-                    errors.append(name)
-                else:
-                    search_choices.add(model)
-            if errors:
-                raise ImproperlyConfigured("Could not load the model(s) "
-                        "%s defined in the 'SEARCH_MODEL_CHOICES' setting."
-                        % ", ".join(errors))
+
+            self.__get_models_from_string(search_choices, 'SEARCH_MODEL_CHOICES')
+            self.__get_models_from_string(search_parents, 'SEARCH_PARENTS_MODELS')
 
             for model in apps.get_models():
                 # Model is actually a subclasses of what we're
@@ -341,7 +352,9 @@ class SearchableManager(Manager):
                     # set, used below for further refinement of models
                     # list to search.
                     models.add(model)
-                    parents.update(this_parents)
+                    for parent in this_parents :
+                        if not parent in search_parents :
+                            parents.update(this_parents)
             # Strip out any models that are superclasses of models,
             # specifically the Page model which will generally be the
             # superclass for all custom content types, since if we
@@ -359,6 +372,7 @@ class SearchableManager(Manager):
                 queryset = model.objects.get_queryset()
             all_results.extend(
                 queryset.search(*args, **kwargs).annotate_scores())
+
         return sorted(all_results, key=lambda r: r.result_count, reverse=True)
 
 
