@@ -259,7 +259,7 @@ class Page(BasePage, ContentTyped):
     def in_menu_template(self, template_name):
         if self.in_menus is not None:
             for i, l, t in settings.PAGE_MENU_TEMPLATES:
-                if not str(i) in self.in_menus and t == template_name:
+                if not str(i) in self.in_menus and t in template_name:
                     return False
         return True
 
