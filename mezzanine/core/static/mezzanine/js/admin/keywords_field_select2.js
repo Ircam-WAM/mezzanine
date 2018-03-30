@@ -35,7 +35,7 @@ jQuery(function($) {
     // keyword IDs for storing in each of the associated hidden fields.
     var keywordsSaved = false;
     $('input[type=submit]').click(function() {
-        console.log('••• submitting')
+        console.log('••• submitting', submitting)
         if (keywordsSaved) {
             return true;
         }
