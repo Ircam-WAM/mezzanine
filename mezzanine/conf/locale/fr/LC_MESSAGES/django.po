@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mezzanine\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-05 07:21-0430\n"
+"POT-Creation-Date: 2018-05-16 21:37+0000\n"
 "PO-Revision-Date: 2012-08-31 20:47+0000\n"
 "Last-Translator: Jérôme Place <djayp83@hotmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/mezzanine/"
@@ -21,23 +21,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: admin.py:38
+#: admin.py:50
 msgid "Settings were successfully updated."
 msgstr "Les options ont été mises à jour avec succès."
 
-#: admin.py:42
+#: admin.py:54
 msgid "Change"
 msgstr "Modifier"
 
-#: forms.py:53
+#: forms.py:92
 msgid "Miscellaneous"
 msgstr "Divers"
 
-#: models.py:17
+#: models.py:20
 msgid "Setting"
 msgstr "Paramètre"
 
-#: models.py:18
+#: models.py:21
 msgid "Settings"
 msgstr "Paramètres"
 
