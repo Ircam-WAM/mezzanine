@@ -93,6 +93,8 @@ class ProfileForm(Html5Mixin, forms.ModelForm):
         try:
             self.fields["username"].help_text = ugettext(
                         "Only letters, numbers, dashes or underscores please")
+            self.fields["email"].help_text = ugettext(
+                        "A valid email address is needed. A verification email will be sent to you. Please verify your spam.")
         except KeyError:
             pass
         for field in self.fields:

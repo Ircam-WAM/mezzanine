@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mezzanine\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-22 07:39+0000\n"
+"POT-Creation-Date: 2018-05-22 08:34+0000\n"
 "PO-Revision-Date: 2013-11-09 20:20+0000\n"
 "Last-Translator: Sebastián Ramírez Magrí <sebasmagri@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/mezzanine/"
@@ -114,34 +114,42 @@ msgid "Only letters, numbers, dashes or underscores please"
 msgstr ""
 "N'utilisez que des lettres, nombres, tirets (-) ou blancs soulignés (_)"
 
-#: forms.py:111
+#: forms.py:97
+msgid ""
+"A valid email address is needed. A verification email will be sent to you. "
+"Please verify your spam."
+msgstr ""
+"Une adresse email valide est nécessaire. Un email de vérification vous sera "
+"envoyé. Merci de vérifier vos spams."
+
+#: forms.py:113
 msgid "Leave blank unless you want to change your password"
 msgstr "Laissez vide si vous ne voulez pas changer votre mot de passe"
 
-#: forms.py:139
+#: forms.py:141
 msgid "Username can only contain letters, numbers, dashes or underscores."
 msgstr ""
 "Le nom d'utilisateur ne peut contenir que des lettres, nombres, tirets (-) "
 "ou blancs soulignés (_)."
 
-#: forms.py:147
+#: forms.py:149
 msgid "This username is already registered"
 msgstr "Ce nom d'utilisateur est déjà présent"
 
-#: forms.py:160
+#: forms.py:162
 msgid "Passwords do not match"
 msgstr "Les mots de passe ne sont pas identiques"
 
-#: forms.py:163
+#: forms.py:165
 #, python-format
 msgid "Password must be at least %s characters"
 msgstr "Le mot de passe doit avoir au moins %s caractères"
 
-#: forms.py:178
+#: forms.py:180
 msgid "This email is already registered"
 msgstr "Cet e-mail est déjà enregistré"
 
-#: forms.py:257
+#: forms.py:259
 msgid "Invalid username/email"
 msgstr "Nom d'utilisateur/adresse e-mail invalide"
 
@@ -339,7 +347,7 @@ msgstr ""
 #| "account.Please check your junk or spam folder."
 msgid ""
 "A verification email has been sent with a link for activating your account. "
-"Please check your junk or spam folder."
+"<span class='red-info'>Please check your junk or spam folder.</span>"
 msgstr ""
 "Un e-mail de vérification vous a été envoyé. Il contient un lien pour "
 "activer votre compte. Merci de contrôler vos messages indésirables (spam)."
