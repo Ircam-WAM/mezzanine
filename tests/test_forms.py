@@ -12,6 +12,7 @@ from mezzanine.utils.tests import TestCase
 
 
 class TestsForm(TestCase):
+
     @skip('Error : title_fr not in list')
     def test_forms(self):
         """
