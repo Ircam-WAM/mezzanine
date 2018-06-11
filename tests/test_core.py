@@ -9,7 +9,6 @@ import pytest
 import pytz
 from unittest import skipUnless, skip
 
-
 from mezzanine.core.middleware import FetchFromCacheMiddleware
 from mezzanine.core.templatetags.mezzanine_tags import initialize_nevercache
 from mezzanine.utils.cache import cache_installed
