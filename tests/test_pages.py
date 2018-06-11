@@ -171,6 +171,7 @@ class PagesTests(TestCase):
         child = RichTextPage.objects.get(id=child.id)
         self.assertTrue(child.slug == "new-parent-slug/child")
 
+    @skip("Changed in Mezzo")
     def test_login_required(self):
         public, _ = RichTextPage.objects.get_or_create(
             title="Public", slug="public", login_required=False
