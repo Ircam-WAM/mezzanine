@@ -50,7 +50,7 @@ try:
         include_package_data=True,
         packages=find_packages(),
         install_requires=[
-            "django-contrib-comments",
+            "django-contrib-comments==1.8.0",
             "django >= 1.8, < 1.12",
             "filebrowser_safe >= 0.4.6",
             "grappelli_safe >= 0.4.5",
