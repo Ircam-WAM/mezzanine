@@ -177,7 +177,7 @@ def render(request, templates, dictionary=None, context_instance=None,
     if context_instance:
         context_instance.update(dictionary)
     else:
-        context_instance = RequestContext(request, dictionary)
+        context_instance = dictionary
     return TemplateResponse(request, templates, context_instance, **kwargs)
 
 
