@@ -132,7 +132,7 @@ class MetaData(models.Model):
     Abstract model that provides meta data for content.
     """
 
-    _meta_title = models.CharField(_("Title"), null=True, blank=True,
+    _meta_title = models.CharField(_("Meta title"), null=True, blank=True,
         max_length=500,
         help_text=_("Optional title to be used in the HTML title tag. "
                     "If left blank, the main title field will be used."))
