@@ -129,7 +129,7 @@ class MetaData(models.Model):
     """
 
     _meta_title = models.CharField(
-        _("Title"),
+        _("Meta title"),
         null=True,
         blank=True,
         max_length=500,
