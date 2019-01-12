@@ -6,15 +6,16 @@ import os
 from shutil import rmtree
 from uuid import uuid4
 
+from unittest import skipIf
 from mezzanine.conf import settings
 from mezzanine.core.templatetags.mezzanine_tags import thumbnail
-from mezzanine.galleries.models import Gallery, GALLERIES_UPLOAD_DIR
 from mezzanine.utils.tests import TestCase, copy_test_to_media
 
 
+@skipIf("mezzanine.galleries" not in settings.INSTALLED_APPS,'Ensure setting is set')
 class GalleriesTests(TestCase):
-
     def test_gallery_import(self):
+        from mezzanine.galleries.models import Gallery, GALLERIES_UPLOAD_DIR
         """
         Test that a gallery creates images when given a zip file to
         import, and that descriptions are created.
