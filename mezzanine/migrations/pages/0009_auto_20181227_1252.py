@@ -22,9 +22,4 @@ class Migration(migrations.Migration):
             name='_meta_title_en',
             field=models.CharField(blank=True, help_text='Optional title to be used in the HTML title tag. If left blank, the main title field will be used.', max_length=500, null=True, verbose_name='Meta title'),
         ),
-        migrations.AlterField(
-            model_name='page',
-            name='_meta_title_fr',
-            field=models.CharField(blank=True, help_text='Optional title to be used in the HTML title tag. If left blank, the main title field will be used.', max_length=500, null=True, verbose_name='Meta title'),
-        ),
     ]
