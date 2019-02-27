@@ -450,8 +450,14 @@ class CurrentSiteManager(DjangoCSM):
     def get_queryset(self):
         if not self.__is_validated:
             self._get_field_name()
-        lookup = {self.__field_name + "__id__exact": current_site_id()}
-        return super(DjangoCSM, self).get_queryset().filter(**lookup)
+        current_site = current_site_id()
+        # when application is restarting, site_id is None
+        # so, we avoid some querysets to be filtered by site_id and put in cache
+        queryset = super(DjangoCSM, self).get_queryset()
+        if current_site:
+            lookup = {self.__field_name + "__id__exact": current_site}
+            return queryset.filter(**lookup)
+        return queryset
 
 
 class DisplayableManager(CurrentSiteManager, PublishedManager, SearchableManager):
