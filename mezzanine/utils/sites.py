@@ -108,8 +108,9 @@ def host_theme_path():
     domain = None
 
     for (host, theme) in settings.HOST_THEMES:
-        if domain is None:
-            domain = Site.objects.get(id=current_site_id()).domain
+        current_site = current_site_id()
+        if domain is None and current_site:
+            domain = Site.objects.get(id=current_site).domain
         if host.lower() == domain.lower():
             try:
                 __import__(theme)
