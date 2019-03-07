@@ -111,7 +111,7 @@ def host_theme_path():
         current_site = current_site_id()
         if domain is None and current_site:
             domain = Site.objects.get(id=current_site).domain
-        if host.lower() == domain.lower():
+        if (current_site is None) or (host.lower() == domain.lower()):
             try:
                 __import__(theme)
                 module = sys.modules[theme]
