@@ -31,7 +31,7 @@ class RichTextField(models.TextField):
         Apply the widget class defined by the
         ``RICHTEXT_WIDGET_CLASS`` setting.
         """
-        default = kwargs.get("widget", None) or AdminTextareaWidget
+        default = kwargs.get("widget", None)
         if default is AdminTextareaWidget:
             from mezzanine.conf import settings
             richtext_widget_path = settings.RICHTEXT_WIDGET_CLASS
