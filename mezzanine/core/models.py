@@ -13,6 +13,8 @@ from django.utils.timezone import now
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
+from organization.core.utils import usersTeamsIntersection
+
 from mezzanine.conf import settings
 from mezzanine.core.fields import OrderField, RichTextField
 from mezzanine.core.managers import CurrentSiteManager, DisplayableManager
@@ -549,6 +551,37 @@ class Ownable(models.Model):
         Restrict in-line editing to the objects's owner and superusers.
         """
         return request.user.is_superuser or request.user.id == self.user_id
+
+
+class TeamOwnable(Ownable):
+    """
+    Abstract model that provides ownership of an object for a user.
+    """
+    class Meta:
+        abstract = True
+        permissions = (
+            ("user_edit", "Mezzo - User - User can edit its own content"),
+            ("user_delete", "Mezzo - User - User can delete its own content"),
+            ("team_edit", "Mezzo - Team - User can edit his team's content"),
+            ("team_delete", "Mezzo - Team - User can delete his team's content"),
+        )
+
+    def is_editable(self, request):
+        """
+        Restrict in-line editing to the objects's owner team and superusers.
+        """
+        ownable_is_editable = super(TeamOwnable, self).is_editable(request)
+        if request.user.has_perm(self._meta.app_label + '.user_edit'):
+            return ownable_is_editable
+        if request.user.has_perm(self._meta.app_label + '.team_edit'):
+            return ownable_is_editable or usersTeamsIntersection(self.user, request.user)
+        return False
+
+    def can_change(self, request):
+        """
+        Dynamic ``change`` permission for content types to override.
+        """
+        return self.is_editable(request)
 
 
 class ContentTyped(models.Model):
