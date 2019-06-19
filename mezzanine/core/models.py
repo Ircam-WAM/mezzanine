@@ -20,6 +20,8 @@ from django.utils.timesince import timesince
 from django.utils.timezone import now
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from organization.core.utils import usersTeamsIntersection
+
 from mezzanine.conf import settings
 from mezzanine.core.fields import RichTextField, OrderField
 from mezzanine.core.managers import DisplayableManager, CurrentSiteManager
@@ -28,7 +30,6 @@ from mezzanine.utils.html import TagCloser
 from mezzanine.utils.models import base_concrete_model, get_user_model_name
 from mezzanine.utils.sites import current_site_id, current_request
 from mezzanine.utils.urls import admin_url, slugify, unique_slug
-
 
 user_model_name = get_user_model_name()
 
@@ -518,6 +519,37 @@ class Ownable(models.Model):
         Restrict in-line editing to the objects's owner and superusers.
         """
         return request.user.is_superuser or request.user.id == self.user_id
+
+
+class TeamOwnable(Ownable):
+    """
+    Abstract model that provides ownership of an object for a user.
+    """
+    class Meta:
+        abstract = True
+        permissions = (
+            ("user_edit", "Mezzo - User - User can edit its own content"),
+            ("user_delete", "Mezzo - User - User can delete its own content"),
+            ("team_edit", "Mezzo - Team - User can edit his team's content"),
+            ("team_delete", "Mezzo - Team - User can delete his team's content"),
+        )
+
+    def is_editable(self, request):
+        """
+        Restrict in-line editing to the objects's owner team and superusers.
+        """
+        ownable_is_editable = super(TeamOwnable, self).is_editable(request)
+        if request.user.has_perm(self._meta.app_label + '.user_edit'):
+            return ownable_is_editable
+        if request.user.has_perm(self._meta.app_label + '.team_edit'):
+            return ownable_is_editable or usersTeamsIntersection(self.user, request.user)
+        return False
+
+    def can_change(self, request):
+        """
+        Dynamic ``change`` permission for content types to override.
+        """
+        return self.is_editable(request)
 
 
 class ContentTyped(models.Model):

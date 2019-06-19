@@ -19,6 +19,7 @@ from mezzanine.utils.urls import clean_slashes
 page_fieldsets = deepcopy(DisplayableAdmin.fieldsets)
 if settings.PAGE_MENU_TEMPLATES:
     page_fieldsets[0][1]["fields"] += ("in_menus",)
+    page_fieldsets[0][1]["fields"] += ("user",)
 page_fieldsets[0][1]["fields"] += ("login_required",)
 
 
@@ -43,7 +44,6 @@ class PageAdmin(ContentTypedAdmin, DisplayableAdmin):
     ``Page``. Handles redirections between admin interfaces for the
     ``Page`` model and its subclasses.
     """
-
     form = PageAdminForm
     fieldsets = page_fieldsets
     change_list_template = "admin/pages/page/change_list.html"
@@ -152,6 +152,11 @@ class PageAdmin(ContentTypedAdmin, DisplayableAdmin):
             except ValueError:
                 return (unordered, page.meta_verbose_name)
         return sorted(models, key=sort_key)
+
+    def changelist_view(self, request, extra_context=None):
+        response = super(PageAdmin, self).changelist_view(request, extra_context=None)
+        # print("++++++++++++ PageAdmin, changelist_view", vars(response))
+        return response
 
 # Drop the meta data fields, and move slug towards the stop.
 link_fieldsets = deepcopy(page_fieldsets[:1])
