@@ -20,7 +20,7 @@ from django.utils.timesince import timesince
 from django.utils.timezone import now
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from organization.core.utils import usersTeamsIntersection
+from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
 
 from mezzanine.conf import settings
 from mezzanine.core.fields import RichTextField, OrderField
@@ -543,13 +543,20 @@ class TeamOwnable(Ownable):
             return ownable_is_editable
         if request.user.has_perm(self._meta.app_label + '.team_edit'):
             return ownable_is_editable or usersTeamsIntersection(self.user, request.user)
-        return False
+        return ownable_is_editable
 
     def can_change(self, request):
         """
         Dynamic ``change`` permission for content types to override.
         """
         return self.is_editable(request)
+
+    def can_delete(self, request): 
+        if request.user.has_perm(self._meta.app_label + '.user_delete'):
+            return self.user == request.user
+        if request.user.has_perm(self._meta.app_label + '.team_delete'):
+            return self.user.id in getUsersListOfSameTeams(request.user)
+        return False
 
 
 class ContentTyped(models.Model):
