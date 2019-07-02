@@ -221,7 +221,7 @@ class Page(TeamOwnable, BasePage, ContentTyped):
         """
         Dynamic ``delete`` permission for content types to override.
         """
-        return True
+        return super(Page, self).can_delete(request)
 
     def can_move(self, request, new_parent):
         """
