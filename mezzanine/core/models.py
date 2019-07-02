@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 
 from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
 
-from organization.core.utils import usersTeamsIntersection
+from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
 
 from mezzanine.conf import settings
 from mezzanine.core.fields import OrderField, RichTextField
