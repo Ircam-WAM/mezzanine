@@ -10,6 +10,7 @@ from mezzanine.core.admin import (
     ContentTypedAdmin,
     DisplayableAdmin,
     DisplayableAdminForm,
+    TeamOwnableAdmin
 )
 from mezzanine.pages.models import Link, Page, RichTextPage
 from mezzanine.utils.urls import clean_slashes
@@ -37,7 +38,7 @@ class PageAdminForm(DisplayableAdminForm):
         return new_slug
 
 
-class PageAdmin(ContentTypedAdmin, DisplayableAdmin):
+class PageAdmin(TeamOwnableAdmin, ContentTypedAdmin, DisplayableAdmin):
     """
     Admin class for the ``Page`` model and all subclasses of
     ``Page``. Handles redirections between admin interfaces for the
@@ -159,7 +160,6 @@ class PageAdmin(ContentTypedAdmin, DisplayableAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response = super(PageAdmin, self).changelist_view(request, extra_context=None)
-        # print("++++++++++++ PageAdmin, changelist_view", vars(response))
         return response
 
 
