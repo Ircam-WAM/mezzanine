@@ -301,14 +301,17 @@ class TeamOwnableAdmin(OwnableAdmin):
         if obj:
             return has_perm and obj.can_delete(request)
         return has_perm
-    # @Todo : not working
-    # def get_actions(self, request):
-    #     actions = super(TeamOwnableAdmin, self).get_actions(request)
-    #     for action in actions :
-    #         print("action", action)
-    #         if action == "delete_selected":
-    #             del actions['delete_selected']
-    #     return actions
+
+    def get_actions(self, request):
+        """
+        Remove Delete action if user has no team_delete permission
+        """
+        actions = super(TeamOwnableAdmin, self).get_actions(request)
+        if not request.user.has_perm(self.model._meta.app_label + '.team_delete'):
+            for action in actions :
+                if action == "delete_selected":
+                    del actions['delete_selected']
+        return actions
 
 
 class ContentTypedAdmin(object):
