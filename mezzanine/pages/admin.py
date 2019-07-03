@@ -13,6 +13,7 @@ from mezzanine.core.admin import (
     TeamOwnableAdmin
 )
 from mezzanine.pages.models import Link, Page, RichTextPage
+
 from mezzanine.utils.urls import clean_slashes
 
 # Add extra fields for pages to the Displayable fields.
