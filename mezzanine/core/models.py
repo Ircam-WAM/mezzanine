@@ -560,8 +560,10 @@ class TeamOwnable(Ownable):
     class Meta:
         abstract = True
         permissions = (
+            ("user_add", "Mezzo - User - User can add its own content"),
             ("user_edit", "Mezzo - User - User can edit its own content"),
             ("user_delete", "Mezzo - User - User can delete its own content"),
+            ("team_add", "Mezzo - Team - User can add to his team's content"),
             ("team_edit", "Mezzo - Team - User can edit his team's content"),
             ("team_delete", "Mezzo - Team - User can delete his team's content"),
         )
@@ -577,13 +579,26 @@ class TeamOwnable(Ownable):
             return ownable_is_editable or usersTeamsIntersection(self.user, request.user)
         return ownable_is_editable
 
+    def can_add(self, request):
+        """
+        Dynamic ``add`` permission for content types to override.
+        """
+        if request.user.has_perm(self._meta.app_label + '.user_add'):
+            return self.user == request.user
+        if request.user.has_perm(self._meta.app_label + '.team_add'):
+            return self.user.id in getUsersListOfSameTeams(request.user)
+        return False
+
     def can_change(self, request):
         """
         Dynamic ``change`` permission for content types to override.
         """
         return self.is_editable(request)
 
-    def can_delete(self, request): 
+    def can_delete(self, request):
+        """
+        Restrict in-line deletion to the objects's owner team and superusers.
+        """
         if request.user.has_perm(self._meta.app_label + '.user_delete'):
             return self.user == request.user
         if request.user.has_perm(self._meta.app_label + '.team_delete'):

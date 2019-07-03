@@ -209,7 +209,7 @@ class Page(TeamOwnable, BasePage, ContentTyped):
         """
         Dynamic ``add`` permission for content types to override.
         """
-        return self.slug != "/"
+        return super(Page, self).can_add(request)
 
     def can_change(self, request):
         """
