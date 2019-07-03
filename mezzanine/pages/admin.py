@@ -9,10 +9,10 @@ from django.shortcuts import get_object_or_404
 
 from mezzanine.conf import settings
 from mezzanine.core.admin import (
-    ContentTypedAdmin, DisplayableAdmin, DisplayableAdminForm)
+    ContentTypedAdmin, DisplayableAdmin, DisplayableAdminForm, TeamOwnableAdmin)
+
 from mezzanine.pages.models import Page, RichTextPage, Link
 from mezzanine.utils.urls import clean_slashes
-
 
 # Add extra fields for pages to the Displayable fields.
 # We only add the menu field if PAGE_MENU_TEMPLATES has values.
@@ -38,7 +38,7 @@ class PageAdminForm(DisplayableAdminForm):
         return new_slug
 
 
-class PageAdmin(ContentTypedAdmin, DisplayableAdmin):
+class PageAdmin(TeamOwnableAdmin, ContentTypedAdmin, DisplayableAdmin):
     """
     Admin class for the ``Page`` model and all subclasses of
     ``Page``. Handles redirections between admin interfaces for the
@@ -155,8 +155,8 @@ class PageAdmin(ContentTypedAdmin, DisplayableAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response = super(PageAdmin, self).changelist_view(request, extra_context=None)
-        # print("++++++++++++ PageAdmin, changelist_view", vars(response))
         return response
+
 
 # Drop the meta data fields, and move slug towards the stop.
 link_fieldsets = deepcopy(page_fieldsets[:1])
