@@ -583,6 +583,8 @@ class TeamOwnable(Ownable):
         """
         Dynamic ``add`` permission for content types to override.
         """
+        if request.user.is_superuser:
+            return True
         if request.user.has_perm(self._meta.app_label + '.user_add'):
             return self.user == request.user
         if request.user.has_perm(self._meta.app_label + '.team_add'):
@@ -599,6 +601,8 @@ class TeamOwnable(Ownable):
         """
         Restrict in-line deletion to the objects's owner team and superusers.
         """
+        if request.user.is_superuser:
+            return True
         if request.user.has_perm(self._meta.app_label + '.user_delete'):
             return self.user == request.user
         if request.user.has_perm(self._meta.app_label + '.team_delete'):
