@@ -312,16 +312,17 @@ class TeamOwnableAdmin(OwnableAdmin):
         model_name = ("%s.%s" % (opts.app_label, opts.object_name)).lower()
         models_all_editable = settings.OWNABLE_MODELS_ALL_EDITABLE
         models_all_editable = [m.lower() for m in models_all_editable]
-
-        if request.user.has_perm(opts.app_label + '.user_edit'):
-            return super(TeamOwnableAdmin, self).get_queryset(request)
-
-        qs = super(OwnableAdmin, self).get_queryset(request)   
+        qs = super(OwnableAdmin, self).get_queryset(request)
+        
         if request.user.has_perm(opts.app_label + '.team_edit'):
             if request.user.is_superuser or model_name in models_all_editable:
                 return qs
             list_users = getUsersListOfSameTeams(request.user)
             return qs.filter(user__id__in=list_users)
+
+        if request.user.has_perm(opts.app_label + '.user_edit'):
+            return super(TeamOwnableAdmin, self).get_queryset(request)
+
         return qs
     
     def has_delete_permission(self, request, obj=None):
