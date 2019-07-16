@@ -541,11 +541,12 @@ class TeamOwnable(Ownable):
         Restrict in-line editing to the objects's owner team and superusers.
         """
         ownable_is_editable = super(TeamOwnable, self).is_editable(request)
-        if request.user.has_perm(self._meta.app_label + '.user_edit'):
-            return ownable_is_editable
+
         if request.user.has_perm(self._meta.app_label + '.team_edit'):
             return ownable_is_editable or usersTeamsIntersection(self.user, request.user)
-        return ownable_is_editable
+        if request.user.has_perm(self._meta.app_label + '.user_edit'):
+            return ownable_is_editable
+        return True
 
     def can_add(self, request):
         """
@@ -571,10 +572,10 @@ class TeamOwnable(Ownable):
         """
         if request.user.is_superuser:
             return True
-        if request.user.has_perm(self._meta.app_label + '.user_delete'):
-            return self.user == request.user
         if request.user.has_perm(self._meta.app_label + '.team_delete'):
             return self.user.id in getUsersListOfSameTeams(request.user)
+        if request.user.has_perm(self._meta.app_label + '.user_delete'):
+            return self.user == request.user
         return True
 
 
