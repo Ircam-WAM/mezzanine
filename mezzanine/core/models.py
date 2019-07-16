@@ -557,7 +557,7 @@ class TeamOwnable(Ownable):
             return self.user == request.user
         if request.user.has_perm(self._meta.app_label + '.team_add'):
             return self.user.id in getUsersListOfSameTeams(request.user)
-        return False
+        return True
 
     def can_change(self, request):
         """
@@ -575,7 +575,7 @@ class TeamOwnable(Ownable):
             return self.user == request.user
         if request.user.has_perm(self._meta.app_label + '.team_delete'):
             return self.user.id in getUsersListOfSameTeams(request.user)
-        return False
+        return True
 
 
 class ContentTyped(models.Model):
