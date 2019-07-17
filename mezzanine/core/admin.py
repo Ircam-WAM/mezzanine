@@ -309,7 +309,7 @@ class TeamOwnableAdmin(OwnableAdmin):
         """
         actions = super(TeamOwnableAdmin, self).get_actions(request)
         if not request.user.has_perm(self.model._meta.app_label + '.team_delete'):
-            for action in actions :
+            for action in list(actions) :
                 if action == "delete_selected":
                     del actions['delete_selected']
         return actions
