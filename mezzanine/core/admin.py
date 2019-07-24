@@ -18,6 +18,7 @@ from organization.core.utils import getUsersListOfSameTeams
 
 from mezzanine.conf import settings
 from mezzanine.core.forms import DynamicInlineAdminForm
+from mezzanine.core.utils import has_content_type_perm
 from mezzanine.core.models import (
     Orderable, ContentTyped, SitePermission, CONTENT_STATUS_PUBLISHED)
 from mezzanine.utils.models import base_concrete_model
@@ -285,14 +286,13 @@ class TeamOwnableAdmin(OwnableAdmin):
         models_all_editable = settings.OWNABLE_MODELS_ALL_EDITABLE
         models_all_editable = [m.lower() for m in models_all_editable]
         qs = super(OwnableAdmin, self).get_queryset(request)
-        
-        if request.user.has_perm(opts.app_label + '.team_edit'):
+        if has_content_type_perm(request.user, self.model, 'team_edit'):
             if request.user.is_superuser or model_name in models_all_editable:
                 return qs
             list_users = getUsersListOfSameTeams(request.user)
             return qs.filter(user__id__in=list_users)
 
-        if request.user.has_perm(opts.app_label + '.user_edit'):
+        if has_content_type_perm(request.user, self.model, 'user_edit'):
             return super(TeamOwnableAdmin, self).get_queryset(request)
 
         return qs
@@ -308,7 +308,7 @@ class TeamOwnableAdmin(OwnableAdmin):
         Remove Delete action if user has no team_delete permission
         """
         actions = super(TeamOwnableAdmin, self).get_actions(request)
-        if not request.user.has_perm(self.model._meta.app_label + '.team_delete'):
+        if not has_content_type_perm(request.user, self.model, 'team_delete'):
             for action in list(actions) :
                 if action == "delete_selected":
                     del actions['delete_selected']
