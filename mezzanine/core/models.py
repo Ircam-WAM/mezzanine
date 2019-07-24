@@ -18,6 +18,9 @@ from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTe
 from mezzanine.conf import settings
 from mezzanine.core.fields import OrderField, RichTextField
 from mezzanine.core.managers import CurrentSiteManager, DisplayableManager
+from mezzanine.core.fields import RichTextField, OrderField
+from mezzanine.core.managers import DisplayableManager, CurrentSiteManager
+from mezzanine.core.utils import has_content_type_perm
 from mezzanine.generic.fields import KeywordsField
 from mezzanine.utils.html import TagCloser
 from mezzanine.utils.models import base_concrete_model, get_user_model_name
@@ -573,10 +576,9 @@ class TeamOwnable(Ownable):
         Restrict in-line editing to the objects's owner team and superusers.
         """
         ownable_is_editable = super(TeamOwnable, self).is_editable(request)
-
-        if request.user.has_perm(self._meta.app_label + '.team_edit'):
+        if has_content_type_perm(request.user, self._meta.model, 'team_edit'):
             return ownable_is_editable or usersTeamsIntersection(self.user, request.user)
-        if request.user.has_perm(self._meta.app_label + '.user_edit'):
+        if has_content_type_perm(request.user, self._meta.model, 'user_edit'):
             return ownable_is_editable
         return True
 
@@ -586,9 +588,9 @@ class TeamOwnable(Ownable):
         """
         if request.user.is_superuser:
             return True
-        if request.user.has_perm(self._meta.app_label + '.user_add'):
+        if has_content_type_perm(request.user, self._meta.model, 'user_add'):
             return self.user == request.user
-        if request.user.has_perm(self._meta.app_label + '.team_add'):
+        if has_content_type_perm(request.user, self._meta.model, 'team_add'):
             return self.user.id in getUsersListOfSameTeams(request.user)
         return True
 
@@ -604,9 +606,9 @@ class TeamOwnable(Ownable):
         """
         if request.user.is_superuser:
             return True
-        if request.user.has_perm(self._meta.app_label + '.team_delete'):
+        if has_content_type_perm(request.user, self._meta.model, 'team_delete'):
             return self.user.id in getUsersListOfSameTeams(request.user)
-        if request.user.has_perm(self._meta.app_label + '.user_delete'):
+        if has_content_type_perm(request.user, self._meta.model, 'user_delete'):
             return self.user == request.user
         return True
 
