@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 
 from mezzanine.conf import settings
 from mezzanine.core.models import (
-    ContentTyped, Displayable, Orderable, RichText)
+    ContentTyped, Displayable, Orderable, RichText, TeamOwnable)
 from mezzanine.pages.fields import MenusField
 from mezzanine.pages.managers import PageManager
 from mezzanine.utils.urls import path_to_slug
@@ -35,7 +35,7 @@ class BasePage(Orderable, Displayable):
 
 
 @python_2_unicode_compatible
-class Page(BasePage, ContentTyped):
+class Page(TeamOwnable, BasePage, ContentTyped):
     """
     A page in the page tree. This is the base class that custom content types
     need to subclass.
@@ -53,6 +53,7 @@ class Page(BasePage, ContentTyped):
         verbose_name_plural = _("Pages")
         ordering = ("titles",)
         order_with_respect_to = "parent"
+        permissions = TeamOwnable.Meta.permissions
 
     def __str__(self):
         return self.titles
@@ -197,19 +198,19 @@ class Page(BasePage, ContentTyped):
         """
         Dynamic ``add`` permission for content types to override.
         """
-        return self.slug != "/"
+        return super(Page, self).can_add(request)
 
     def can_change(self, request):
         """
         Dynamic ``change`` permission for content types to override.
         """
-        return True
+        return super(Page, self).can_change(request)
 
     def can_delete(self, request):
         """
         Dynamic ``delete`` permission for content types to override.
         """
-        return True
+        return super(Page, self).can_delete(request)
 
     def can_move(self, request, new_parent):
         """
@@ -291,6 +292,7 @@ class Link(Page):
     class Meta:
         verbose_name = _("Link")
         verbose_name_plural = _("Links")
+        permissions = TeamOwnable.Meta.permissions
 
 
 class PageMoveException(Exception):

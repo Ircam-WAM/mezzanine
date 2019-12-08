@@ -62,8 +62,9 @@ def current_site_id():
                     site_id = site.id
                     if cache_installed():
                         cache_set(cache_key, site_id)
-    if not site_id:
-        site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
+    # Executed when application is restarting
+    # if not site_id:
+    #     site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
     if request and site_id and not getattr(settings, "TESTING", False):
         request.site_id = site_id
     return site_id
@@ -107,9 +108,10 @@ def host_theme_path():
     domain = None
 
     for (host, theme) in settings.HOST_THEMES:
-        if domain is None:
-            domain = Site.objects.get(id=current_site_id()).domain
-        if host.lower() == domain.lower():
+        current_site = current_site_id()
+        if domain is None and current_site:
+            domain = Site.objects.get(id=current_site).domain
+        if (current_site is None) or (host.lower() == domain.lower()):
             try:
                 __import__(theme)
                 module = sys.modules[theme]

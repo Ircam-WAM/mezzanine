@@ -217,7 +217,7 @@ class SearchableQuerySet(QuerySet):
                 if not count and related_weights:
                     count = int(sum(related_weights) / len(related_weights))
 
-                if result.publish_date:
+                if hasattr(result, 'publish_date'):
                     age = (now() - result.publish_date).total_seconds()
                     if age > 0:
                         count = count / age**settings.SEARCH_AGE_SCALE_FACTOR
@@ -331,23 +331,28 @@ class SearchableManager(Manager):
             # ``SEARCH_MODEL_CHOICES`` setting.
             search_choices = set()
             search_parents = set()
+            search_no_displayable = set()
             models = set()
             parents = set()
 
             self.__get_models_from_string(search_choices, 'SEARCH_MODEL_CHOICES')
             self.__get_models_from_string(search_parents, 'SEARCH_PARENTS_MODELS')
+            self.__get_models_from_string(search_no_displayable, 'SEARCH_MODEL_NO_DISPLAYABLE')
 
             for model in apps.get_models():
+                
                 # Model is actually a subclasses of what we're
                 # searching (eg Displayabale)
                 is_subclass = issubclass(model, self.model)
+                is_not_displayale = model in search_no_displayable
                 # Model satisfies the search choices list - either
                 # there are no search choices, model is directly in
                 # search choices, or its parent is.
                 this_parents = set(model._meta.get_parent_list())
                 in_choices = not search_choices or model in search_choices
                 in_choices = in_choices or this_parents & search_choices
-                if is_subclass and (in_choices or not search_choices):
+
+                if is_subclass or is_not_displayale and (in_choices or not search_choices):
                     # Add to models we'll seach. Also maintain a parent
                     # set, used below for further refinement of models
                     # list to search.
@@ -396,8 +401,14 @@ class CurrentSiteManager(DjangoCSM):
     def get_queryset(self):
         if not self.__is_validated:
             self._get_field_name()
-        lookup = {self.__field_name + "__id__exact": current_site_id()}
-        return super(DjangoCSM, self).get_queryset().filter(**lookup)
+        current_site = current_site_id()
+        # when application is restarting, site_id is None
+        # so, we avoid some querysets to be filtered by site_id and put in cache
+        queryset = super(DjangoCSM, self).get_queryset()
+        if current_site:
+            lookup = {self.__field_name + "__id__exact": current_site}
+            return queryset.filter(**lookup)
+        return queryset
 
 
 class DisplayableManager(CurrentSiteManager, PublishedManager,

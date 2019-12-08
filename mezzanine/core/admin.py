@@ -14,8 +14,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from organization.core.utils import getUsersListOfSameTeams
+
 from mezzanine.conf import settings
 from mezzanine.core.forms import DynamicInlineAdminForm
+from mezzanine.core.utils import has_content_type_perm
 from mezzanine.core.models import (
     Orderable, ContentTyped, SitePermission, CONTENT_STATUS_PUBLISHED)
 from mezzanine.utils.models import base_concrete_model
@@ -228,6 +231,14 @@ class OwnableAdmin(admin.ModelAdmin):
     admin excludes: ``exclude = ('user',)``
     """
 
+    def get_readonly_fields(self, request, obj=None):
+        self.readonly_fields = super(OwnableAdmin, self).get_readonly_fields(request, obj=None)
+        if not request.user.is_superuser and not 'user' in self.readonly_fields:
+            self.readonly_fields += ('user',)
+        else :
+            self.readonly_fields = tuple(filter(lambda item: not item == 'user', self.readonly_fields))
+        return self.readonly_fields
+
     def save_form(self, request, form, change):
         """
         Set the object's owner as the logged in user.
@@ -255,6 +266,53 @@ class OwnableAdmin(admin.ModelAdmin):
         if request.user.is_superuser or model_name in models_all_editable:
             return qs
         return qs.filter(user__id=request.user.id)
+
+
+class TeamOwnableAdmin(OwnableAdmin):
+    
+    def get_queryset(self, request):
+        """
+        Filter the change list by currently logged in user if not a
+        superuser. We also skip filtering if the model for this admin
+        class has been added to the sequence in the setting
+        ``OWNABLE_MODELS_ALL_EDITABLE``, which contains models in the
+        format ``app_label.object_name``, and allows models subclassing
+        ``Ownable`` to be excluded from filtering, eg: ownership should
+        not imply permission to edit.
+        """
+
+        opts = self.model._meta
+        model_name = ("%s.%s" % (opts.app_label, opts.object_name)).lower()
+        models_all_editable = settings.OWNABLE_MODELS_ALL_EDITABLE
+        models_all_editable = [m.lower() for m in models_all_editable]
+        qs = super(OwnableAdmin, self).get_queryset(request)
+        if has_content_type_perm(request.user, self.model, 'team_edit'):
+            if request.user.is_superuser or model_name in models_all_editable:
+                return qs
+            list_users = getUsersListOfSameTeams(request.user)
+            return qs.filter(user__id__in=list_users)
+
+        if has_content_type_perm(request.user, self.model, 'user_edit'):
+            return super(TeamOwnableAdmin, self).get_queryset(request)
+
+        return qs
+    
+    def has_delete_permission(self, request, obj=None):
+        has_perm = super(TeamOwnableAdmin, self).has_delete_permission(request, obj=None)
+        if obj:
+            return has_perm and obj.can_delete(request)
+        return has_perm
+
+    def get_actions(self, request):
+        """
+        Remove Delete action if user has no team_delete permission
+        """
+        actions = super(TeamOwnableAdmin, self).get_actions(request)
+        if not has_content_type_perm(request.user, self.model, 'team_delete'):
+            for action in list(actions) :
+                if action == "delete_selected":
+                    del actions['delete_selected']
+        return actions
 
 
 class ContentTypedAdmin(object):
