@@ -7,7 +7,7 @@ from django.template.defaultfilters import truncatewords_html
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.html import escape
-
+from django.contrib.contenttypes.models import ContentType
 from django_comments.models import Comment
 
 from mezzanine.generic.fields import RatingField
@@ -106,6 +106,7 @@ class AssignedKeyword(Orderable):
     A ``Keyword`` assigned to a model instance.
     """
 
+
     keyword = models.ForeignKey("Keyword", on_delete=models.CASCADE,
                         verbose_name=_("Keyword"), related_name="assignments")
     content_type = models.ForeignKey("contenttypes.ContentType",
@@ -118,6 +119,10 @@ class AssignedKeyword(Orderable):
 
     def __str__(self):
         return str(self.keyword)
+
+    def get_keywords_of_content_type(self, app_label, model):
+        c = ContentType.objects.get(app_label=app_label, model=model)
+        return AssignedKeyword.objects.filter(content_type__id=c.id)
 
 
 class Rating(models.Model):
