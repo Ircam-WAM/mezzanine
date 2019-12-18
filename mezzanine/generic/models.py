@@ -134,7 +134,9 @@ class AssignedKeyword(Orderable):
 
     def get_keywords_of_content_type(self, app_label, model):
         c = ContentType.objects.get(app_label=app_label, model=model)
-        return AssignedKeyword.objects.filter(content_type__id=c.id)
+        return AssignedKeyword.objects.filter(content_type__id=c.id) \
+                                        .distinct('keyword__slug') \
+                                        .order_by('keyword__slug')
 
 
 class Rating(models.Model):
