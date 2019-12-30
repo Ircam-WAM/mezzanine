@@ -340,7 +340,11 @@ class SearchableManager(Manager):
             self.__get_models_from_string(search_no_displayable, 'SEARCH_MODEL_NO_DISPLAYABLE')
 
             for model in apps.get_models():
-                
+
+                # Skip proxy models because we want to search the parent model
+                if model._meta.proxy:
+                    continue
+
                 # Model is actually a subclasses of what we're
                 # searching (eg Displayabale)
                 is_subclass = issubclass(model, self.model)
@@ -352,7 +356,7 @@ class SearchableManager(Manager):
                 in_choices = not search_choices or model in search_choices
                 in_choices = in_choices or this_parents & search_choices
 
-                if is_subclass or is_not_displayale and (in_choices or not search_choices):
+                if is_subclass or (is_not_displayale and (in_choices or not search_choices)):
                     # Add to models we'll seach. Also maintain a parent
                     # set, used below for further refinement of models
                     # list to search.
