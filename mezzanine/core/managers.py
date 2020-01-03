@@ -316,7 +316,7 @@ class SearchableManager(Manager):
             # No choices defined - build a list of leaf models (those
             # without subclasses) that inherit from Displayable.
             models = [m for m in apps.get_models()
-                      if issubclass(m, self.model)]
+                      if issubclass(m, self.model) and not m._meta.proxy]
             parents = reduce(ior, [set(m._meta.get_parent_list())
                                    for m in models])
             models = [m for m in models if m not in parents]
@@ -436,6 +436,10 @@ class DisplayableManager(CurrentSiteManager, PublishedManager,
         items = {home.get_absolute_url(): home}
         for model in apps.get_models():
             if issubclass(model, self.model):
+                # Skip proxy models because we want to get the parent model
+                if model._meta.proxy:
+                    continue
+
                 for item in (model.objects.published(for_user=for_user)
                                   .filter(**kwargs)
                                   .exclude(slug__startswith="http://")

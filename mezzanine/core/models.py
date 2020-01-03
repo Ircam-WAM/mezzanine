@@ -549,7 +549,11 @@ class ContentTyped(models.Model):
         """ Return all subclasses of the concrete model.  """
         concrete_model = base_concrete_model(ContentTyped, cls)
         return [m for m in apps.get_models()
-                if m is not concrete_model and issubclass(m, concrete_model)]
+                if (
+                    m is not concrete_model
+                    and issubclass(m, concrete_model)
+                    and not m._meta.proxy
+                )]
 
     def set_content_model(self):
         """
