@@ -308,7 +308,8 @@ class TeamOwnableAdmin(OwnableAdmin):
         Remove Delete action if user has no team_delete permission
         """
         actions = super(TeamOwnableAdmin, self).get_actions(request)
-        if not has_content_type_perm(request.user, self.model, 'team_delete'):
+        if not has_content_type_perm(request.user, self.model, 'team_delete') \
+            and getattr(settings, 'USE_TEAM_FEATURES', True):
             for action in list(actions) :
                 if action == "delete_selected":
                     del actions['delete_selected']
