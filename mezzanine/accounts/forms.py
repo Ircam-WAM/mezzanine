@@ -14,6 +14,7 @@ from mezzanine.conf import settings
 from mezzanine.core.forms import Html5Mixin
 from mezzanine.utils.urls import slugify, unique_slug
 
+from captcha.fields import CaptchaField
 
 User = get_user_model()
 
@@ -81,9 +82,11 @@ class ProfileForm(Html5Mixin, forms.ModelForm):
     password2 = forms.CharField(label=_("Password (again)"),
                                 widget=forms.PasswordInput(render_value=False))
 
+    captcha = CaptchaField()
+
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", "username")
+        fields = ("first_name", "last_name", "email", "username", "captcha")
         exclude = _exclude_fields
 
     def __init__(self, *args, **kwargs):
