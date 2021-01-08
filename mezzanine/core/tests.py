@@ -48,7 +48,7 @@ from mezzanine.utils.deprecation import (get_middleware_setting,
 from mezzanine.utils.importing import import_dotted_path
 from mezzanine.utils.tests import (TestCase, run_pyflakes_for_package,
                                              run_pep8_for_package)
-from mezzanine.utils.html import TagCloser
+from mezzanine.utils.html import TagCloser, escape
 
 
 class CoreTests(TestCase):
@@ -64,6 +64,12 @@ class CoreTests(TestCase):
                          "Line break<br>")
 
     @skip("pyflakes has been deleted from Mezzo")
+    def test_escape(self):
+        """
+        Test HTML is escaped to whitelist.
+        """
+        self.assertEqual(escape("<foo><div></div></foo>"), "<div></div>")
+
     def test_syntax(self):
         """
         Run pyflakes/pep8 across the code base to check for potential errors.
@@ -472,12 +478,16 @@ class CoreTests(TestCase):
               'mezzanine.core.tests.SubclassMiddleware']),
             (True,
              ['mezzanine.core.middleware.UpdateCacheMiddleware',
+              'mezzanine.core.tests.FetchFromCacheMiddleware',
+              'mezzanine.core.tests.function_middleware']),
+            (True,
+             ['mezzanine.core.middleware.UpdateCacheMiddleware',
               'mezzanine.core.middleware.FetchFromCacheMiddleware']),
         ]
 
         with self.settings(TESTING=False):  # Well, this is silly
-            for expected_result, middleware_classes in test_contexts:
-                kwargs = {get_middleware_setting_name(): middleware_classes}
+            for expected_result, middlewares in test_contexts:
+                kwargs = {get_middleware_setting_name(): middlewares}
                 with self.settings(**kwargs):
                     cache_installed.cache_clear()
                     self.assertEqual(cache_installed(), expected_result)
@@ -487,6 +497,12 @@ class CoreTests(TestCase):
 
 class SubclassMiddleware(FetchFromCacheMiddleware):
     pass
+
+
+def function_middleware(get_response):
+    def middleware(request):
+        return get_response(request)
+    return middleware
 
 
 @skipUnless("mezzanine.pages" in settings.INSTALLED_APPS,
