@@ -9,7 +9,7 @@ from django.contrib.sites.models import Site
 
 from mezzanine.conf import settings
 from mezzanine.core.request import current_request
-from mezzanine.utils.deprecation import get_middleware_setting
+from mezzanine.utils.conf import middlewares_or_subclasses_installed
 
 
 SITE_PERMISSION_MIDDLEWARE = \
@@ -63,8 +63,8 @@ def current_site_id():
                     if cache_installed():
                         cache_set(cache_key, site_id)
     # Executed when application is restarting
-    # if not site_id:
-    #     site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
+    if not site_id:
+        site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
     if request and site_id and not getattr(settings, "TESTING", False):
         request.site_id = site_id
     return site_id
@@ -92,7 +92,7 @@ def has_site_permission(user):
     also fall back to an ``is_staff`` check if the middleware is not
     installed, to ease migration.
     """
-    if SITE_PERMISSION_MIDDLEWARE not in get_middleware_setting():
+    if not middlewares_or_subclasses_installed([SITE_PERMISSION_MIDDLEWARE]):
         return user.is_staff and user.is_active
     return getattr(user, "has_site_permission", False)
 
