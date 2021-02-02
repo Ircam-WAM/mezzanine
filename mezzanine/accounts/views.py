@@ -85,7 +85,7 @@ def signup_verify(request, uidb36=None, token=None):
         user.save()
         auth_login(request, user)
         info(request, _("Successfully signed up"))
-        return login_redirect(request)
+        return redirect(settings.LOGIN_REDIRECT_URL)
     else:
         error(request, _("The link you clicked is no longer valid."))
         return redirect("/")
