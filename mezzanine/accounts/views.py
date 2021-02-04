@@ -61,7 +61,7 @@ def signup(request, template="accounts/account_signup.html",
             else:
                 send_verification_mail(request, new_user, "signup_verify")
                 info(request, _("A verification email has been sent with "
-                                "a link for activating your account."))
+                                "a link for activating your account. Please also check your SPAM folder."))
             return redirect(next_url(request) or "/accounts/login/")
         else:
             info(request, _("Successfully signed up"))
