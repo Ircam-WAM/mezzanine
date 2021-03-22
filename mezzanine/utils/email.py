@@ -6,6 +6,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template import loader
 from django.utils.http import int_to_base36
+from django.shortcuts import get_object_or_404, redirect
 
 from mezzanine.conf import settings
 from mezzanine.utils.urls import admin_url, next_url
@@ -78,7 +79,7 @@ def send_verification_mail(request, user, verification_type):
     verify_url = reverse(verification_type, kwargs={
         "uidb36": int_to_base36(user.id),
         "token": default_token_generator.make_token(user),
-    }) + "?next=" + (next_url(request) or "/")
+    }) + "?next=" + redirect("profile_update")
     context = {
         "request": request,
         "user": user,
