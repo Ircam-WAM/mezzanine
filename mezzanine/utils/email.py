@@ -6,7 +6,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.template import loader
 from django.utils.http import int_to_base36
-from django.shortcuts import get_object_or_404, redirect
 
 from mezzanine.conf import settings
 from mezzanine.utils.urls import admin_url, next_url
