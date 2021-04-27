@@ -63,8 +63,8 @@ def current_site_id():
                     if cache_installed():
                         cache_set(cache_key, site_id)
     # Executed when application is restarting
-    if not site_id:
-        site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
+    #if not site_id:
+    #    site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
     if request and site_id and not getattr(settings, "TESTING", False):
         request.site_id = site_id
     return site_id
