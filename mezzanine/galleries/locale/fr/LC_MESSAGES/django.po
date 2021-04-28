@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mezzanine\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-09 10:33-0430\n"
+"POT-Creation-Date: 2021-04-28 16:38+0000\n"
 "PO-Revision-Date: 2012-09-16 16:30+0000\n"
 "Last-Translator: Kniyl <mathias.ettinger@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/mezzanine/"
@@ -20,11 +20,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: models.py:38
+#: models.py:46
 msgid "Zip import"
 msgstr "Importer un fichier zip"
 
-#: models.py:40
+#: models.py:48
 msgid ""
 "Upload a zip file containing images, and they'll be imported into this "
 "gallery."
@@ -32,26 +32,26 @@ msgstr ""
 "Télécharge un fichier zip contenant des images, elles seront importées dans "
 "cette galerie."
 
-#: models.py:44
+#: models.py:120
 msgid "Gallery"
 msgstr "Galerie"
 
-#: models.py:45
+#: models.py:121
 msgid "Galleries"
 msgstr "Galeries"
 
-#: models.py:92
+#: models.py:129
 msgid "File"
 msgstr "Fichier"
 
-#: models.py:94
+#: models.py:131
 msgid "Description"
 msgstr "Description"
 
-#: models.py:98
+#: models.py:135
 msgid "Image"
 msgstr "Image"
 
-#: models.py:99
+#: models.py:136
 msgid "Images"
 msgstr "Images"
