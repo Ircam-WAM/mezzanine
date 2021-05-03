@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mezzanine\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-05 07:20-0430\n"
+"POT-Creation-Date: 2021-04-28 16:37+0000\n"
 "PO-Revision-Date: 2013-06-23 11:36+0000\n"
 "Last-Translator: Christophe kryskool <christophe.chauvet@gmail.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/mezzanine/"
@@ -25,49 +25,60 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: admin.py:27
+#: admin.py:73
 msgid "This field is required if status is set to published."
 msgstr "Ce champ est requis si le statut est « publié »."
 
-#: admin.py:47
+#: admin.py:96
 msgid "Meta data"
 msgstr "Balises Meta"
 
-#: defaults.py:21
+#: defaults.py:22
 msgid "Controls the ordering and grouping of the admin menu."
 msgstr "Contrôler l'ordre et le regroupement du menu d'administration."
 
-#: defaults.py:24 models.py:275
+#: defaults.py:25 models.py:387
 msgid "Content"
 msgstr "Contenu"
 
-#: defaults.py:25
+#: defaults.py:26
 msgid "Media Library"
 msgstr "Bibliothèque de médias"
 
-#: defaults.py:26 templates/admin/login.html:43
+#: defaults.py:27 templates/admin/login.html:59
 msgid "Site"
 msgstr "Site"
 
-#: defaults.py:27
+#: defaults.py:28
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: defaults.py:33
-msgid "Unregister these models from the admin."
-msgstr "Désassocier ces modèles de l'administration."
+#: defaults.py:34
+msgid "Collapse the Admin menu"
+msgstr ""
 
-#: defaults.py:40
+#: defaults.py:35
+msgid ""
+"Controls whether or not the left-hand admin menu is collapsed by default."
+msgstr ""
+
+#: defaults.py:43
+msgid ""
+"A sequence of Python dotted paths to models (eg: ``['mezzanine.blog.models."
+"BlogPost',]``) that should be removed from the admin."
+msgstr ""
+
+#: defaults.py:52
 msgid "Size of thumbnail previews for image fields in the admin interface."
 msgstr ""
 "Taille des vignettes d'aperçu des champs images de l'interface "
 "d'administration."
 
-#: defaults.py:48
+#: defaults.py:60
 msgid "Akismet API Key"
 msgstr "Clé API Akismet"
 
-#: defaults.py:49
+#: defaults.py:61
 msgid ""
 "Key for http://akismet.com spam filtering service. Used for filtering "
 "comments and forms."
@@ -75,23 +86,33 @@ msgstr ""
 "Clé pour le service de filtre de spam proposé par http://akismet.com. "
 "Utilisé pour protéger les commentaires et les formulaires."
 
-#: defaults.py:57
+#: defaults.py:69
 msgid "bit.ly access token"
 msgstr "Jeton d'accès à bit.ly"
 
-#: defaults.py:58
+#: defaults.py:70
 msgid "Access token for http://bit.ly URL shortening service."
 msgstr "Jeton d'accès pour le raccourcisseur d'URL http://bit.ly."
 
-#: defaults.py:65
+#: defaults.py:77
+#, fuzzy
+#| msgid ""
+#| "Mezzanine's caching uses a technique know as mint caching. This is where "
+#| "the requested expiry for a cache entry is stored with the cache entry in "
+#| "cache, and the real expiry used has the ``CACHE_SET_DELAY`` added to it. "
+#| "Then on a cache get, the store expiry is checked, and if it has past, the "
+#| "cache entry is set again, and no entry is returned. This tries to ensure "
+#| "that cache misses never occur, and if many clients were to get a cache "
+#| "miss at once, only one would actually need to re-generated the cache "
+#| "entry."
 msgid ""
 "Mezzanine's caching uses a technique know as mint caching. This is where the "
 "requested expiry for a cache entry is stored with the cache entry in cache, "
 "and the real expiry used has the ``CACHE_SET_DELAY`` added to it. Then on a "
-"cache get, the store expiry is checked, and if it has past, the cache entry "
-"is set again, and no entry is returned. This tries to ensure that cache "
-"misses never occur, and if many clients were to get a cache miss at once, "
-"only one would actually need to re-generated the cache entry."
+"cache get, the store expiry is checked, and if it has passed, the cache "
+"entry is set again, and no entry is returned. This tries to ensure that "
+"cache misses never occur, and if many clients were to get a cache miss at "
+"once, only one would actually need to re-generated the cache entry."
 msgstr ""
 "Mezzanine utilise une technique de cache connue sous le nom de « mint "
 "caching ». Il s'agit de stocker une entrée de cache avec une date de "
@@ -103,7 +124,7 @@ msgstr ""
 "seul le premier d'entre eux devra effectivement régénérer l'entrée (les "
 "autres obtenant une entrée désuète mais toujours valide)."
 
-#: defaults.py:93
+#: defaults.py:105
 msgid ""
 "A three item sequence, each containing a sequence of template tags used to "
 "render the admin dashboard."
@@ -111,27 +132,18 @@ msgstr ""
 "Une séquence de trois éléments, chacune contenant une séquence de balises de "
 "template utilisées pour générer le tableau de bord de l'administration."
 
-#: defaults.py:101
-msgid "Device specific template sub-directory to use as the default device."
-msgstr ""
-"Sous répertoire spécifique a un appareil a utiliser en tant qu'appareil par "
-"défaut."
-
-#: defaults.py:109
-msgid ""
-"Mapping of device specific template sub-directory names to the sequence of "
-"strings that may be found in their user agents."
-msgstr ""
-"Correspondance des noms des sous-répertoires de template spécifiques à un "
-"appareil avec la séquence de noms qui peut être trouvée dans leur "
-"utilisateur mandataire."
-
-#: defaults.py:131
+#: defaults.py:113
 msgid "If ``True``, website forms will use HTML5 features."
 msgstr ""
 "Si ``vrai``, les formulaires du site utiliseront les fonctionnalités HTML5."
 
-#: defaults.py:138
+#: defaults.py:120
+msgid ""
+"If ``True``, failures to send email will happen silently, otherwise an "
+"exception is raised. Defaults to ``settings.DEBUG``."
+msgstr ""
+
+#: defaults.py:129
 msgid ""
 "A sequence of fields that will be injected into Mezzanine's (or any "
 "library's) models. Each item in the sequence is a four item sequence. The "
@@ -153,18 +165,26 @@ msgstr ""
 "comme second argument, le chemin d'accès ``django.models.db.`` lui sera "
 "préfixé."
 
-#: defaults.py:153
+#: defaults.py:144
 msgid "Google Analytics ID"
 msgstr "ID Google Analytics"
 
-#: defaults.py:155
+#: defaults.py:145
 msgid "Google Analytics ID (http://www.google.com/analytics/)"
 msgstr "ID Google Analytics (http://www.google.com/analytics/)"
 
-#: defaults.py:161
+#: defaults.py:152
+#, fuzzy
+#| msgid ""
+#| "A sequence mapping host names to themes, allowing different templates to "
+#| "be served per HTTP hosts Each item in the sequence is a two item "
+#| "sequence, containing a host such as ``othersite.example.com``, and the "
+#| "name of an importable Python package for the theme. If the host is "
+#| "matched for a request, the templates directory inside the theme package "
+#| "will be first searched when loading templates."
 msgid ""
 "A sequence mapping host names to themes, allowing different templates to be "
-"served per HTTP hosts Each item in the sequence is a two item sequence, "
+"served per HTTP host. Each item in the sequence is a two item sequence, "
 "containing a host such as ``othersite.example.com``, and the name of an "
 "importable Python package for the theme. If the host is matched for a "
 "request, the templates directory inside the theme package will be first "
@@ -178,37 +198,41 @@ msgstr ""
 "le répertoire templates contenu dans le package du thème sera le premier "
 "visité pour rechercher des templates."
 
-#: defaults.py:175
+#: defaults.py:166
+msgid "If ``True``, front-end inline editing will be enabled."
+msgstr ""
+
+#: defaults.py:173
 msgid "Name of the jQuery file."
 msgstr "Nom du fichier jQuery."
 
-#: defaults.py:176
+#: defaults.py:174
 msgid "Name of the jQuery file found in mezzanine/core/static/mezzanine/js/"
 msgstr "Nom du fichier jQuery trouvé dans mezzanine/core/static/mezzanine/js/"
 
-#: defaults.py:184
+#: defaults.py:182
 msgid "Name of the jQuery UI file."
 msgstr "Nom du fichier jQuery UI."
 
-#: defaults.py:185
+#: defaults.py:183
 msgid "Name of the jQuery UI file found in mezzanine/core/static/mezzanine/js/"
 msgstr ""
 "Nom du fichier jQuery UI trouvé dans mezzanine/core/static/mezzanine/js/"
 
-#: defaults.py:193
+#: defaults.py:191
 msgid "Max paging links"
 msgstr "Nombre maximum de liens de pagination"
 
-#: defaults.py:194
+#: defaults.py:192
 msgid "Max number of paging links to display when paginating."
 msgstr ""
 "Nombre maximum de liens de pagination à afficher lors de la pagination."
 
-#: defaults.py:201
+#: defaults.py:199
 msgid "Media library per site"
 msgstr "Bibliothèque de media par site"
 
-#: defaults.py:202
+#: defaults.py:200
 msgid ""
 "If ``True``, each site will use its own directory within the filebrowser "
 "media library."
@@ -216,7 +240,7 @@ msgstr ""
 "Si ``True``, chaque site aura son propre répertoire dans la bibliothèque des "
 "media."
 
-#: defaults.py:210
+#: defaults.py:208
 msgid ""
 "Models that subclass ``Ownable`` and use the ``OwnableAdmin`` have their "
 "admin change-list records filtered down to records owned by the current "
@@ -231,7 +255,7 @@ msgstr ""
 "nom_objet`` qui, même s'ils sous-classent ``Ownable``, montrent les "
 "modifications relatives à cet objet pour tous les utilisateurs."
 
-#: defaults.py:222
+#: defaults.py:220
 msgid ""
 "Dotted package path and class name of the widget to use for the "
 "``RichTextField``."
@@ -239,18 +263,18 @@ msgstr ""
 "Chemin d'accès en notation pointée vers le nom de la classe à utiliser pour "
 "le widget ``RichTextField``."
 
-#: defaults.py:230
+#: defaults.py:228
 msgid ""
 "List of HTML tags that won't be stripped from ``RichTextField`` instances."
 msgstr "Liste des balises HTML autorisés pour les pages ``RichTextField``."
 
-#: defaults.py:246
+#: defaults.py:245
 msgid ""
 "List of HTML attributes that won't be stripped from ``RichTextField`` "
 "instances."
 msgstr "Liste des attributs HTML autorisés pour les pages ``RichTextField``."
 
-#: defaults.py:264
+#: defaults.py:263
 msgid ""
 "List of inline CSS styles that won't be stripped from ``RichTextField`` "
 "instances."
@@ -258,31 +282,35 @@ msgstr ""
 "Liste des styles CSS inline qui ne seront pas filtrés par les ``Pages de "
 "texte riche``"
 
-#: defaults.py:272
+#: defaults.py:273
+#, fuzzy
+#| msgid ""
+#| "Dotted path to the function to call on a ``RichTextField`` value before "
+#| "it is rendered to the template."
 msgid ""
-"Dotted path to the function to call on a ``RichTextField`` value before it "
-"is rendered to the template."
+"List of dotted paths to functions, called in order, on a ``RichTextField`` "
+"value before it is rendered to the template."
 msgstr ""
 "Chemin d'accès en notation pointée vers la fonction à appeler pour finaliser "
 "un ``RichTextField`` avant qu'il soit converti par un template."
 
-#: defaults.py:282
+#: defaults.py:283
 msgid "High"
 msgstr "Élevé"
 
-#: defaults.py:283
+#: defaults.py:284
 msgid "Low (allows video, iframe, Flash, etc)"
 msgstr "Bas (autorise les vidéos, iframe, Flash, etc.)"
 
-#: defaults.py:284
+#: defaults.py:285
 msgid "No filtering"
 msgstr "Aucune protection"
 
-#: defaults.py:289
+#: defaults.py:290
 msgid "Rich Text filter level"
 msgstr "Niveau de protection Rich Text"
 
-#: defaults.py:290
+#: defaults.py:291
 msgid ""
 "*Do not change this setting unless you know what you're doing.*\n"
 "\n"
@@ -323,7 +351,7 @@ msgstr ""
 "filtres de protection et autorisera l'ajout de n'importe quel code par les "
 "utilisateurs, y compris les balises script."
 
-#: defaults.py:313
+#: defaults.py:314
 msgid ""
 "Sequence of models that will be provided by default as choices in the search "
 "form. Each model should be in the format ``app_label.model_name``. Only "
@@ -334,15 +362,27 @@ msgstr ""
 "model_name``. Seuls les modèles qui héritent de ``mezzanine.core.models."
 "Displayable`` doivent être listés."
 
-#: defaults.py:323
+#: defaults.py:324
 msgid "Search results per page"
 msgstr "Nombre de résultats de recherche par page"
 
-#: defaults.py:324
+#: defaults.py:325
 msgid "Number of results shown in the search results page."
 msgstr "Nombre de résultats affichés dans la page de résultats de recherche."
 
-#: defaults.py:331
+#: defaults.py:332
+msgid "Emphasis to put on age when ranking search results"
+msgstr ""
+
+#: defaults.py:333
+msgid ""
+"The amount of emphasis to put on age when ranking search results. A higher "
+"number gives more emphasis to age, ranking newer results higher with less "
+"regard to their ordinary score. Setting this to zero disables weighing "
+"search results by age."
+msgstr ""
+
+#: defaults.py:344
 msgid ""
 "A URL prefix for mounting all of Mezzanine's urlpatterns under. When using "
 "this, you'll also need to manually apply it to your project's root ``urls."
@@ -354,11 +394,11 @@ msgstr ""
 "de votre projet. Le module ``urls.py`` créé à cet emplacement par la "
 "commande ``mezzanine-project`` contient un exemple vers la fin du fichier."
 
-#: defaults.py:342
+#: defaults.py:355
 msgid "Site Title"
 msgstr "Titre du site"
 
-#: defaults.py:343
+#: defaults.py:356
 msgid ""
 "Title that will display at the top of the site, and be appended to the "
 "content of the HTML title tags on every page."
@@ -366,23 +406,29 @@ msgstr ""
 "Titre qui s'affichera en haut du site, et qui sera ajouté au contenu de la "
 "balise HTML title de chaque page."
 
-#: defaults.py:351
+#: defaults.py:365
 msgid "Tagline"
 msgstr "Slogan"
 
-#: defaults.py:352
+#: defaults.py:366
 msgid "A tag line that will appear at the top of all pages."
 msgstr "Un slogan qui sera affiché en haut de chaque page."
 
-#: defaults.py:354
+#: defaults.py:368
 msgid "An open source content management platform."
 msgstr "Une plateforme de gestion de contenu open-source."
 
-#: defaults.py:359
+#: defaults.py:374
+#, fuzzy
+#| msgid ""
+#| "Dotted Python path to the callable for converting strings into URL slugs. "
+#| "Defaults to ``mezzanine.utils.urls.slugify_unicode`` which allows for non-"
+#| "ascii URLS. Change to ``django.template.defaultfilters.slugify`` to use "
+#| "Django's slugify function, or something of your own if required."
 msgid ""
 "Dotted Python path to the callable for converting strings into URL slugs. "
 "Defaults to ``mezzanine.utils.urls.slugify_unicode`` which allows for non-"
-"ascii URLS. Change to ``django.template.defaultfilters.slugify`` to use "
+"ascii URLs. Change to ``django.template.defaultfilters.slugify`` to use "
 "Django's slugify function, or something of your own if required."
 msgstr ""
 "Chemin d'accès, en notation pointée de Python, vers la fonction permettant "
@@ -392,7 +438,7 @@ msgstr ""
 "defaultfilters.slugify`` pour utiliser la fonction de labelisation de Django "
 "ou toute autre fonction de votre cru si vous en éprouvez le besoin."
 
-#: defaults.py:370
+#: defaults.py:385
 msgid ""
 "Sequence of dotted Python paths to callable functions used for checking "
 "posted content (such as forms or comments) is spam. Each function should "
@@ -409,11 +455,11 @@ msgstr ""
 "utilisera le service de filtrage de spam http://akismet.com lorsque le "
 "paramètre ``AKISMET_API_KEY`` est configuré."
 
-#: defaults.py:383
+#: defaults.py:398
 msgid "Enable SSL"
 msgstr "Activer SSL"
 
-#: defaults.py:384
+#: defaults.py:399
 msgid ""
 "If ``True``, users will be automatically redirected to HTTPS for the URLs "
 "specified by the ``SSL_FORCE_URL_PREFIXES`` setting."
@@ -422,11 +468,11 @@ msgstr ""
 "protocole HTTPS pour les URLs désignées dans le paramètre "
 "``SSL_FORCE_URL_PREFIXES``."
 
-#: defaults.py:393
+#: defaults.py:408
 msgid "Force Host"
 msgstr "Forcer le nom d'hôte"
 
-#: defaults.py:394
+#: defaults.py:409
 msgid ""
 "Host name that the site should always be accessed via that matches the SSL "
 "certificate."
@@ -434,7 +480,7 @@ msgstr ""
 "Nom d'hôte pour lequel le site devrait être toujours accessible et qui "
 "correspond au certificat SSL."
 
-#: defaults.py:412
+#: defaults.py:427
 msgid ""
 "If ``True``, only URLs specified by the ``SSL_FORCE_URL_PREFIXES`` setting "
 "will be accessible over SSL, and all other URLs will be redirected back to "
@@ -444,23 +490,23 @@ msgstr ""
 "``SSL_FORCE_URL_PREFIXES`` seront accessibles via SSL. Les autres URLs "
 "seront redirigées vers du HTTP si on tente d'y accéder via HTTPS."
 
-#: defaults.py:422
+#: defaults.py:437
 msgid "List of words which will be stripped from search queries."
 msgstr "Liste de mots à supprimer des termes de recherche."
 
-#: defaults.py:479
+#: defaults.py:494
 msgid "Tag Cloud Sizes"
 msgstr "Taille du nuage de tags"
 
-#: defaults.py:480
+#: defaults.py:495
 msgid "Number of different sizes for tags when shown as a cloud."
 msgstr "Nombre de tailles de tag différentes à afficher dans un nuage."
 
-#: defaults.py:487
+#: defaults.py:502
 msgid "Sequence of setting names available within templates."
 msgstr "Séquence des noms des paramètres accessibles depuis les templates."
 
-#: defaults.py:502
+#: defaults.py:520
 msgid ""
 "Directory name to store thumbnails in, that will be created relative to the "
 "original image's directory."
@@ -468,7 +514,7 @@ msgstr ""
 "Nom du répertoire de stockage des vignettes, qui seront créés sous la même "
 "arborescence que dans le dossier original des images."
 
-#: defaults.py:510
+#: defaults.py:528
 msgid ""
 "URL for the JavaScript file (relative to ``STATIC_URL``) that handles "
 "configuring TinyMCE when the default ``RICHTEXT_WIDGET_CLASS`` is used."
@@ -477,7 +523,7 @@ msgstr ""
 "configuration de TinyMCE lorsque le ``RICHTEXT_WIDGET_CLASS`` par défaut est "
 "utilisé."
 
-#: defaults.py:519
+#: defaults.py:537
 msgid ""
 "Dict mapping file field names in the format ``app_label.model_name."
 "field_name`` to the Python dotted path to function names that will be used "
@@ -487,41 +533,67 @@ msgstr ""
 "field_name`` vers le chemin relatif en Python pour les noms de fonctions qui "
 "seront utilisées pour l'argument du champ de fichier ``upload_to``."
 
-#: defaults.py:535
+#: defaults.py:553
+#, fuzzy
+#| msgid ""
+#| "If ``True``, the south application will be automatically added to the "
+#| "``INSTALLED_APPS`` setting."
 msgid ""
-"If ``True``, the south application will be automatically added to the "
-"``INSTALLED_APPS`` setting."
+"If ``True``, the django-modeltranslation application will be automatically "
+"added to the ``INSTALLED_APPS`` setting."
 msgstr ""
 "Si ``vrai``, l'application South sera automatiquement ajoutée au paramètre "
 "``INSTALLED_APPS``."
 
-#: fields.py:37
+#: defaults.py:561
+msgid ""
+"Unique random string like ``SECRET_KEY``, but used for two-phased cache "
+"responses. Like ``SECRET_KEY``, should be automatically generated by the "
+"``mezzanine-project`` command."
+msgstr ""
+
+#: fields.py:41
 #, python-format
 msgid "Could not import the value of settings.RICHTEXT_WIDGET_CLASS: %s"
 msgstr "Ne peut importer la valeur de settings.RICHTEXT_WIDGET_CLASS: %s"
 
-#: forms.py:84 models.py:317
-msgid "Order"
-msgstr "Ordre"
+#: managers.py:429 templates/admin/index.html:15 templates/index.html:4
+#: templates/index.html:5 templates/index.html:8
+#: templates/search_results.html:13
+msgid "Home"
+msgstr "Accueil"
 
-#: models.py:56 models.py:110
+#: middleware.py:47
+#, python-format
+msgid ""
+"Your account is using the default password, please <a href='%s'>change it</"
+"a> immediately."
+msgstr ""
+
+#: models.py:83
 msgid "Title"
 msgstr "Titre"
 
-#: models.py:57
+#: models.py:84
 msgid "URL"
 msgstr "URL"
 
-#: models.py:58
+#: models.py:85
 msgid "Leave blank to have the URL auto-generated from the title."
 msgstr ""
 "Laisser vide pour que l'URL soit générée automatiquement d'après le titre."
 
-#: models.py:100
+#: models.py:127
 msgid "View on site"
 msgstr "Voir sur le site"
 
-#: models.py:112
+#: models.py:137
+#, fuzzy
+#| msgid "Meta data"
+msgid "Meta title"
+msgstr "Balises Meta"
+
+#: models.py:139
 msgid ""
 "Optional title to be used in the HTML title tag. If left blank, the main "
 "title field will be used."
@@ -529,15 +601,15 @@ msgstr ""
 "Titre optionnel à utiliser dans la balise HTML title. Si vide, le champ "
 "titre principal sera utilisé."
 
-#: models.py:114
+#: models.py:141
 msgid "Description"
 msgstr "Description"
 
-#: models.py:115
+#: models.py:142
 msgid "Generate description"
 msgstr "Générer une description"
 
-#: models.py:116
+#: models.py:143
 msgid ""
 "If checked, the description will be automatically generated from content. "
 "Uncheck if you want to manually set a custom description."
@@ -545,94 +617,210 @@ msgstr ""
 "Si coché, la description sera automatiquement générée à partir du contenu. "
 "Décochez si vous voulez définir manuellement une description personnalisée."
 
-#: models.py:119
+#: models.py:146
 msgid "Keywords"
 msgstr "Mots-clés"
 
-#: models.py:176
+#: models.py:226
 msgid "Draft"
 msgstr "Brouillon"
 
-#: models.py:177
+#: models.py:227
 msgid "Published"
 msgstr "Publié"
 
-#: models.py:188
+#: models.py:240
 msgid "Status"
 msgstr "Statut"
 
-#: models.py:190
+#: models.py:242
 msgid "With Draft chosen, will only be shown for admin users on the site."
 msgstr ""
 "Si l'option « brouillon » est cochée, ne sera visible sur le site que pour "
 "les utilisateurs ayant les droits d'administration."
 
-#: models.py:192 models.py:225
+#: models.py:244 models.py:277
 msgid "Published from"
 msgstr "Publié à partir du"
 
-#: models.py:193
+#: models.py:245
 msgid "With Published chosen, won't be shown until this time"
 msgstr ""
 "Si l'option « publié » est cochée, ne sera pas visible avant cette date"
 
-#: models.py:195
+#: models.py:247
 msgid "Expires on"
 msgstr "Expirera le"
 
-#: models.py:196
+#: models.py:248
 msgid "With Published chosen, won't be shown after this time"
 msgstr ""
 "Si l'option « publié » est cochée, ne sera pas visible après cette date"
 
-#: models.py:199
+#: models.py:251
 msgid "Show in sitemap"
 msgstr "Afficher dans le plan du site"
 
-#: models.py:402 models.py:422
+#: models.py:427
+msgid "Order"
+msgstr "Ordre"
+
+#: models.py:513 models.py:640
 msgid "Author"
 msgstr "Auteur"
 
-#: models.py:425
+#: models.py:642
 msgid "Sites"
 msgstr "Sites"
 
-#: models.py:428
+#: models.py:645
 msgid "Site permission"
 msgstr "Permission d'accès aux sites"
 
-#: models.py:429
+#: models.py:646
 msgid "Site permissions"
 msgstr "Permissions d'accès aux sites"
 
-#: views.py:87
-msgid "Permission denied"
-msgstr "Permission refusée"
+#: templates/admin/base_site.html:13
+msgid "View site"
+msgstr "Voir le site"
 
-#: views.py:115 templates/includes/search_form.html:11
-msgid "Everything"
-msgstr "Partout"
+#: templates/admin/includes/app_list.html:20
+#: templates/admin/includes/content_typed_change_list.html:24
+msgid "Add"
+msgstr "Ajouter"
 
-#: templates/base.html:121
+#: templates/admin/includes/app_list.html:27
+#: templates/includes/language_selector.html:19
+msgid "Change"
+msgstr "Modifier"
+
+#: templates/admin/includes/recent_actions.html:4
+msgid "Recent Actions"
+msgstr "Actions récentes"
+
+#: templates/admin/includes/recent_actions.html:5
+msgid "My Actions"
+msgstr "Mes actions"
+
+#: templates/admin/includes/recent_actions.html:9
+msgid "None available"
+msgstr "Aucun disponible"
+
+#: templates/admin/index.html:17
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: templates/admin/login.html:24
+msgid "You don't have permission to access the admin for this site."
+msgstr ""
+"Vous ne disposez pas des droits pour accéder à l'administration de ce site."
+
+#: templates/admin/login.html:31
+msgid "Username or email:"
+msgstr "Nom d'utilisateur ou e-mail :"
+
+#: templates/admin/login.html:35
+msgid "Password:"
+msgstr "Mot de passe :"
+
+#: templates/admin/login.html:42
+msgid "Language"
+msgstr ""
+
+#: templates/admin/login.html:53
+msgid "Interface:"
+msgstr "Interface :"
+
+#: templates/admin/login.html:56 templates/includes/editable_toolbar.html:8
+msgid "Admin"
+msgstr "Admin"
+
+#: templates/admin/login.html:63
+msgid "Log in"
+msgstr "S'identifier"
+
+#: templates/admin/login.html:66
+msgid "Forgot password?"
+msgstr "Mot de passe oublié ?"
+
+#: templates/base.html:55
+msgid "Toggle Navigation"
+msgstr ""
+
+#: templates/base.html:135
 msgid "Powered by"
 msgstr "Propulsé par"
 
-#: templates/base.html:124
+#: templates/base.html:138
 msgid "and"
 msgstr "et"
 
-#: templates/base.html:127
+#: templates/base.html:141
 msgid "Theme by"
 msgstr "Thème par"
 
-#: templates/base.html:130
-msgid "View Mobile Site"
-msgstr "Version mobile"
+#: templates/errors/404.html:6 templates/errors/404.html:10
+#: templates/errors/404.html:15
+msgid "Page not found"
+msgstr "Page non trouvée"
 
-#: templates/index.html:4 templates/index.html.py:5 templates/index.html:8
-#: templates/search_results.html:10 templates/admin/index.html:15
-msgid "Home"
-msgstr "Accueil"
+#: templates/errors/404.html:16
+msgid "The page you requested does not exist."
+msgstr "La page demandée n'existe pas."
+
+#: templates/errors/500.html:6 templates/errors/500.html:10
+#: templates/errors/500.html:15
+msgid "Error"
+msgstr "Erreur"
+
+#: templates/errors/500.html:16
+msgid "Sorry, an error occurred."
+msgstr "Une erreur est survenue, nous en sommes désolé."
+
+#: templates/includes/editable_form.html:16
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/includes/editable_form.html:17
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/includes/editable_form.html:25
+msgid "Edit"
+msgstr "Éditer"
+
+#: templates/includes/editable_toolbar.html:9
+msgid "Log out"
+msgstr "Déconnexion"
+
+#: templates/includes/form_errors.html:8
+msgid "Please correct the errors below."
+msgstr ""
+
+#: templates/includes/form_fields.html:26
+msgid "required"
+msgstr ""
+
+#: templates/includes/pagination.html:7 views.py:192
+msgid "Page"
+msgstr "Page"
+
+#: templates/includes/pagination.html:7
+msgid "of"
+msgstr "sur"
+
+#: templates/includes/search_form.html:5
+msgid "Search"
+msgstr "Recherche"
+
+#: templates/includes/search_form.html:14 views.py:117
+msgid "Everything"
+msgstr "Partout"
+
+#: templates/includes/search_form.html:26
+msgid "Go"
+msgstr "OK"
 
 #: templates/index.html:12
 msgid ""
@@ -682,12 +870,12 @@ msgstr ""
 "sur un serveur de production</a></li>\n"
 "</ul>\n"
 
-#: templates/search_results.html:5 templates/search_results.html.py:6
-#: templates/search_results.html:13
+#: templates/search_results.html:5 templates/search_results.html:6
+#: templates/search_results.html:15
 msgid "Search Results"
 msgstr "Résultats de la recherche"
 
-#: templates/search_results.html:20
+#: templates/search_results.html:22
 #, python-format
 msgid ""
 "\n"
@@ -696,7 +884,7 @@ msgstr ""
 "\n"
 "Aucun résultat dans %(search_type)s pour la recherche : %(query)s\n"
 
-#: templates/search_results.html:24
+#: templates/search_results.html:26
 #, python-format
 msgid ""
 "\n"
@@ -708,117 +896,32 @@ msgstr ""
 "Résultats %(start)s - %(end)s sur %(total)s.\n"
 "\n"
 
-#: templates/search_results.html:35
+#: templates/search_results.html:47
 msgid "read more"
 msgstr "lire la suite"
 
-#: templates/admin/base_site.html:34
-msgid "View site"
-msgstr "Voir le site"
+#: views.py:90
+msgid "Permission denied"
+msgstr "Permission refusée"
 
-#: templates/admin/index.html:17 templates/admin/includes/dropdown_menu.html:4
-msgid "Dashboard"
-msgstr "Tableau de bord"
+#~ msgid "Unregister these models from the admin."
+#~ msgstr "Désassocier ces modèles de l'administration."
 
-#: templates/admin/login.html:21
-msgid "You don't have permission to access the admin for this site."
-msgstr ""
-"Vous ne disposez pas des droits pour accéder à l'administration de ce site."
+#~ msgid "Device specific template sub-directory to use as the default device."
+#~ msgstr ""
+#~ "Sous répertoire spécifique a un appareil a utiliser en tant qu'appareil "
+#~ "par défaut."
 
-#: templates/admin/login.html:28
-msgid "Username or email:"
-msgstr "Nom d'utilisateur ou e-mail :"
+#~ msgid ""
+#~ "Mapping of device specific template sub-directory names to the sequence "
+#~ "of strings that may be found in their user agents."
+#~ msgstr ""
+#~ "Correspondance des noms des sous-répertoires de template spécifiques à un "
+#~ "appareil avec la séquence de noms qui peut être trouvée dans leur "
+#~ "utilisateur mandataire."
 
-#: templates/admin/login.html:32
-msgid "Password:"
-msgstr "Mot de passe :"
+#~ msgid "View Mobile Site"
+#~ msgstr "Version mobile"
 
-#: templates/admin/login.html:37
-msgid "Interface:"
-msgstr "Interface :"
-
-#: templates/admin/login.html:40 templates/includes/editable_toolbar.html:7
-#: templates/includes/editable_toolbar.html:9
-msgid "Admin"
-msgstr "Admin"
-
-#: templates/admin/login.html:47
-msgid "Log in"
-msgstr "S'identifier"
-
-#: templates/admin/login.html:50
-msgid "Forgot password?"
-msgstr "Mot de passe oublié ?"
-
-#: templates/admin/includes/app_list.html:20
-msgid "Add"
-msgstr "Ajouter"
-
-#: templates/admin/includes/app_list.html:27
-msgid "Change"
-msgstr "Modifier"
-
-#: templates/admin/includes/dynamic_inline_stacked.html:6
-#: templates/admin/includes/dynamic_inline_tabular.html:6
-msgid "Add another"
-msgstr "Ajouter un autre"
-
-#: templates/admin/includes/recent_actions.html:4
-msgid "Recent Actions"
-msgstr "Actions récentes"
-
-#: templates/admin/includes/recent_actions.html:5
-msgid "My Actions"
-msgstr "Mes actions"
-
-#: templates/admin/includes/recent_actions.html:9
-msgid "None available"
-msgstr "Aucun disponible"
-
-#: templates/errors/404.html:6
-msgid "Page not found"
-msgstr "Page non trouvée"
-
-#: templates/errors/404.html:10
-msgid "The page you requested does not exist."
-msgstr "La page demandée n'existe pas."
-
-#: templates/errors/500.html:6
-msgid "Error"
-msgstr "Erreur"
-
-#: templates/errors/500.html:10
-msgid "Sorry, an error occurred."
-msgstr "Une erreur est survenue, nous en sommes désolé."
-
-#: templates/includes/editable_form.html:16
-msgid "Save"
-msgstr "Enregistrer"
-
-#: templates/includes/editable_form.html:17
-msgid "Cancel"
-msgstr "Annuler"
-
-#: templates/includes/editable_form.html:25
-msgid "Edit"
-msgstr "Éditer"
-
-#: templates/includes/editable_toolbar.html:11
-msgid "Log out"
-msgstr "Déconnexion"
-
-#: templates/includes/pagination.html:8
-msgid "Page"
-msgstr "Page"
-
-#: templates/includes/pagination.html:8
-msgid "of"
-msgstr "sur"
-
-#: templates/includes/search_form.html:4
-msgid "Search"
-msgstr "Recherche"
-
-#: templates/includes/search_form.html:22
-msgid "Go"
-msgstr "OK"
+#~ msgid "Add another"
+#~ msgstr "Ajouter un autre"
