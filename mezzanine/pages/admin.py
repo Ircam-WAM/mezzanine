@@ -168,6 +168,7 @@ class PageAdmin(TeamOwnableAdmin, ContentTypedAdmin, DisplayableAdmin):
 link_fieldsets = deepcopy(page_fieldsets[:1])
 link_fieldsets[0][1]["fields"] = link_fieldsets[0][1]["fields"][:-1]
 link_fieldsets[0][1]["fields"].insert(1, "slug")
+link_fieldsets[0][1]["fields"] += ("login_required",)
 
 
 class LinkAdmin(PageAdmin):
