@@ -1,17 +1,12 @@
-from __future__ import unicode_literals
-from future.builtins import str
-
 import re
 import unicodedata
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import (resolve, reverse, NoReverseMatch,
-                                      get_script_prefix)
 from django.shortcuts import redirect
-from django.utils.encoding import smart_text
-
-from django.utils.http import is_safe_url
+from django.urls import NoReverseMatch, get_script_prefix, resolve, reverse
 from django.utils import translation
+from django.utils.encoding import smart_text
+from django.utils.http import is_safe_url
 
 from mezzanine.conf import settings
 from mezzanine.utils.importing import import_dotted_path
@@ -22,7 +17,7 @@ def admin_url(model, url, object_id=None):
     Returns the URL for the given model and admin url name.
     """
     opts = model._meta
-    url = "admin:%s_%s_%s" % (opts.app_label, opts.object_name.lower(), url)
+    url = f"admin:{opts.app_label}_{opts.object_name.lower()}_{url}"
     args = ()
     if object_id is not None:
         args = (object_id,)
@@ -38,7 +33,7 @@ def home_slug():
     prefix = get_script_prefix()
     slug = reverse("home")
     if slug.startswith(prefix):
-        slug = '/' + slug[len(prefix):]
+        slug = "/" + slug[len(prefix) :]
     try:
         return resolve(slug).kwargs["slug"]
     except KeyError:
@@ -66,7 +61,7 @@ def slugify_unicode(s):
             chars.append(char)
         elif cat == "Z":
             chars.append(" ")
-    return re.sub("[-\s]+", "-", "".join(chars).strip()).lower()
+    return re.sub(r"[-\s]+", "-", "".join(chars).strip()).lower()
 
 
 def unique_slug(queryset, slug_field, slug):
@@ -79,7 +74,7 @@ def unique_slug(queryset, slug_field, slug):
         if i > 0:
             if i > 1:
                 slug = slug.rsplit("-", 1)[0]
-            slug = "%s-%s" % (slug, i)
+            slug = f"{slug}-{i}"
         try:
             queryset.get(**{slug_field: slug})
         except ObjectDoesNotExist:
@@ -94,7 +89,7 @@ def next_url(request):
     """
     next = request.GET.get("next", request.POST.get("next", ""))
     host = request.get_host()
-    return next if next and is_safe_url(next, host=host) else None
+    return next if next and is_safe_url(next, allowed_hosts=host) else None
 
 
 def login_redirect(request):
@@ -107,6 +102,7 @@ def login_redirect(request):
     ignorable_nexts = ("",)
     if "mezzanine.accounts" in settings.INSTALLED_APPS:
         from mezzanine.accounts import urls
+
         ignorable_nexts += (urls.SIGNUP_URL, urls.LOGIN_URL, urls.LOGOUT_URL)
     next = next_url(request) or ""
     if next in ignorable_nexts:
@@ -129,6 +125,7 @@ def path_to_slug(path):
     a slug that would match a ``Page`` instance's slug.
     """
     from mezzanine.urls import PAGES_SLUG
+
     lang_code = translation.get_language_from_path(path)
     for prefix in (lang_code, settings.SITE_PREFIX, PAGES_SLUG):
         if prefix:

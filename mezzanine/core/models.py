@@ -1,35 +1,28 @@
-from __future__ import unicode_literals
-from future.builtins import str
-from future.utils import with_metaclass
-
 from json import loads
-try:
-    from urllib.request import urlopen
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib import urlopen, urlencode
+from urllib.parse import urlencode
+from urllib.request import urlopen
 
 from django.apps import apps
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.db.models.base import ModelBase
 from django.template.defaultfilters import truncatewords_html
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.html import strip_tags
+from django.utils.html import format_html, strip_tags
 from django.utils.timesince import timesince
 from django.utils.timezone import now
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 
 from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
 
 from mezzanine.conf import settings
-from mezzanine.core.fields import RichTextField, OrderField
-from mezzanine.core.managers import DisplayableManager, CurrentSiteManager
+from mezzanine.core.fields import OrderField, RichTextField
+from mezzanine.core.managers import CurrentSiteManager, DisplayableManager
 from mezzanine.core.utils import has_content_type_perm
 from mezzanine.generic.fields import KeywordsField
 from mezzanine.utils.html import TagCloser
 from mezzanine.utils.models import base_concrete_model, get_user_model_name
-from mezzanine.utils.sites import current_site_id, current_request
+from mezzanine.utils.sites import current_request, current_site_id
 from mezzanine.utils.urls import admin_url, slugify, unique_slug
 
 user_model_name = get_user_model_name()
@@ -41,6 +34,7 @@ def wrapped_manager(klass):
 
         class Mgr(MultilingualManager, klass):
             pass
+
         return Mgr()
     else:
         return klass()
@@ -59,8 +53,7 @@ class SiteRelated(models.Model):
     class Meta:
         abstract = True
 
-    site = models.ForeignKey("sites.Site", on_delete=models.CASCADE,
-        editable=False)
+    site = models.ForeignKey("sites.Site", on_delete=models.CASCADE, editable=False)
 
     def save(self, update_site=False, *args, **kwargs):
         """
@@ -70,10 +63,9 @@ class SiteRelated(models.Model):
         """
         if update_site or (self.id is None and self.site_id is None):
             self.site_id = current_site_id()
-        super(SiteRelated, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
-@python_2_unicode_compatible
 class Slugged(SiteRelated):
     """
     Abstract model that handles auto-generating slugs. Each slugged
@@ -81,9 +73,12 @@ class Slugged(SiteRelated):
     """
 
     title = models.CharField(_("Title"), max_length=500)
-    slug = models.CharField(_("URL"), max_length=2000, blank=True,
-            help_text=_("Leave blank to have the URL auto-generated from "
-                        "the title."))
+    slug = models.CharField(
+        _("URL"),
+        max_length=2000,
+        blank=True,
+        help_text=_("Leave blank to have the URL auto-generated from " "the title."),
+    )
 
     class Meta:
         abstract = True
@@ -97,7 +92,7 @@ class Slugged(SiteRelated):
         """
         if not self.slug:
             self.slug = self.generate_unique_slug()
-        super(Slugged, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def generate_unique_slug(self):
         """
@@ -117,15 +112,17 @@ class Slugged(SiteRelated):
         attr = "title"
         if settings.USE_MODELTRANSLATION:
             from modeltranslation.utils import build_localized_fieldname
+
             attr = build_localized_fieldname(attr, settings.LANGUAGE_CODE)
         # Get self.title_xx where xx is the default language, if any.
         # Get self.title otherwise.
         return slugify(getattr(self, attr, None) or self.title)
 
     def admin_link(self):
-        return "<a href='%s'>%s</a>" % (self.get_absolute_url(),
-                                        ugettext("View on site"))
-    admin_link.allow_tags = True
+        return format_html(
+            "<a href='{}'>{}</a>", self.get_absolute_url(), gettext("View on site")
+        )
+
     admin_link.short_description = ""
 
 
@@ -134,15 +131,26 @@ class MetaData(models.Model):
     Abstract model that provides meta data for content.
     """
 
-    _meta_title = models.CharField(_("Meta title"), null=True, blank=True,
+    _meta_title = models.CharField(
+        _("Title"),
+        null=True,
+        blank=True,
         max_length=500,
-        help_text=_("Optional title to be used in the HTML title tag. "
-                    "If left blank, the main title field will be used."))
+        help_text=_(
+            "Optional title to be used in the HTML title tag. "
+            "If left blank, the main title field will be used."
+        ),
+    )
     description = models.TextField(_("Description"), blank=True)
-    gen_description = models.BooleanField(_("Generate description"),
-        help_text=_("If checked, the description will be automatically "
-                    "generated from content. Uncheck if you want to manually "
-                    "set a custom description."), default=True)
+    gen_description = models.BooleanField(
+        _("Generate description"),
+        help_text=_(
+            "If checked, the description will be automatically "
+            "generated from content. Uncheck if you want to manually "
+            "set a custom description."
+        ),
+        default=True,
+    )
     keywords = KeywordsField(verbose_name=_("Keywords"))
 
     class Meta:
@@ -154,7 +162,7 @@ class MetaData(models.Model):
         """
         if self.gen_description:
             self.description = strip_tags(self.description_from_content())
-        super(MetaData, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def meta_title(self):
         """
@@ -173,20 +181,20 @@ class MetaData(models.Model):
         for field_type in (RichTextField, models.TextField):
             if not description:
                 for field in self._meta.get_fields():
-                    if (isinstance(field, field_type) and
-                            field.name != "description"):
+                    if isinstance(field, field_type) and field.name != "description":
                         description = getattr(self, field.name)
                         if description:
-                            from mezzanine.core.templatetags.mezzanine_tags \
-                                                    import richtext_filters
+                            from mezzanine.core.templatetags.mezzanine_tags import (
+                                richtext_filters,
+                            )
+
                             description = richtext_filters(description)
                             break
         # Fall back to the title if description couldn't be determined.
         if not description:
             description = str(self)
         # Strip everything after the first block or sentence.
-        ends = ("</p>", "<br />", "<br/>", "<br>", "</ul>",
-                "\n", ". ", "! ", "? ")
+        ends = ("</p>", "<br />", "<br/>", "<br>", "</ul>", "\n", ". ", "! ", "? ")
         for end in ends:
             pos = description.lower().find(end)
             if pos > -1:
@@ -217,7 +225,7 @@ class TimeStamped(models.Model):
         self.updated = _now
         if not self.id:
             self.created = _now
-        super(TimeStamped, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 CONTENT_STATUS_DRAFT = 1
@@ -237,16 +245,27 @@ class Displayable(Slugged, MetaData, TimeStamped):
     blog posts, and Cartridge products.
     """
 
-    status = models.IntegerField(_("Status"),
-        choices=CONTENT_STATUS_CHOICES, default=CONTENT_STATUS_PUBLISHED,
-        help_text=_("With Draft chosen, will only be shown for admin users "
-            "on the site."))
-    publish_date = models.DateTimeField(_("Published from"),
+    status = models.IntegerField(
+        _("Status"),
+        choices=CONTENT_STATUS_CHOICES,
+        default=CONTENT_STATUS_PUBLISHED,
+        help_text=_(
+            "With Draft chosen, will only be shown for admin users " "on the site."
+        ),
+    )
+    publish_date = models.DateTimeField(
+        _("Published from"),
         help_text=_("With Published chosen, won't be shown until this time"),
-        blank=True, null=True, db_index=True)
-    expiry_date = models.DateTimeField(_("Expires on"),
+        blank=True,
+        null=True,
+        db_index=True,
+    )
+    expiry_date = models.DateTimeField(
+        _("Expires on"),
         help_text=_("With Published chosen, won't be shown after this time"),
-        blank=True, null=True)
+        blank=True,
+        null=True,
+    )
     short_url = models.URLField(blank=True, null=True)
     in_sitemap = models.BooleanField(_("Show in sitemap"), default=True)
 
@@ -264,7 +283,7 @@ class Displayable(Slugged, MetaData, TimeStamped):
         """
         if self.publish_date is None:
             self.publish_date = now()
-        super(Displayable, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_admin_url(self):
         return admin_url(self, "change", self.id)
@@ -274,6 +293,7 @@ class Displayable(Slugged, MetaData, TimeStamped):
         Returns the time since ``publish_date``.
         """
         return timesince(self.publish_date)
+
     publish_date_since.short_description = _("Published from")
 
     def published(self):
@@ -282,9 +302,11 @@ class Displayable(Slugged, MetaData, TimeStamped):
         the publish and expiry dates fall before and after the
         current date when specified.
         """
-        return (self.status == CONTENT_STATUS_PUBLISHED and
-            (self.publish_date is None or self.publish_date <= now()) and
-            (self.expiry_date is None or self.expiry_date >= now()))
+        return (
+            self.status == CONTENT_STATUS_PUBLISHED
+            and (self.publish_date is None or self.publish_date <= now())
+            and (self.expiry_date is None or self.expiry_date >= now())
+        )
 
     def get_absolute_url(self):
         """
@@ -293,8 +315,9 @@ class Displayable(Slugged, MetaData, TimeStamped):
         contains a URL.
         """
         name = self.__class__.__name__
-        raise NotImplementedError("The model %s does not have "
-                                  "get_absolute_url defined" % name)
+        raise NotImplementedError(
+            "The model %s does not have " "get_absolute_url defined" % name
+        )
 
     def get_absolute_url_with_host(self):
         """
@@ -336,11 +359,14 @@ class Displayable(Slugged, MetaData, TimeStamped):
         service have been specified.
         """
         from mezzanine.conf import settings
+
         if settings.BITLY_ACCESS_TOKEN:
-            url = "https://api-ssl.bit.ly/v3/shorten?%s" % urlencode({
-                "access_token": settings.BITLY_ACCESS_TOKEN,
-                "uri": self.get_absolute_url_with_host(),
-            })
+            url = "https://api-ssl.bit.ly/v3/shorten?%s" % urlencode(
+                {
+                    "access_token": settings.BITLY_ACCESS_TOKEN,
+                    "uri": self.get_absolute_url_with_host(),
+                }
+            )
             response = loads(urlopen(url).read().decode("utf-8"))
             if response["status_code"] == 200:
                 return response["data"]["url"]
@@ -403,8 +429,10 @@ class OrderableBase(ModelBase):
 
     def __new__(cls, name, bases, attrs):
         if "Meta" not in attrs:
+
             class Meta:
                 pass
+
             attrs["Meta"] = Meta
         if hasattr(attrs["Meta"], "order_with_respect_to"):
             order_field = attrs["Meta"].order_with_respect_to
@@ -412,10 +440,10 @@ class OrderableBase(ModelBase):
             del attrs["Meta"].order_with_respect_to
         if not hasattr(attrs["Meta"], "ordering"):
             setattr(attrs["Meta"], "ordering", ("_order",))
-        return super(OrderableBase, cls).__new__(cls, name, bases, attrs)
+        return super().__new__(cls, name, bases, attrs)
 
 
-class Orderable(with_metaclass(OrderableBase, models.Model)):
+class Orderable(models.Model, metaclass=OrderableBase):
     """
     Abstract model that provides a custom ordering integer field
     similar to using Meta's ``order_with_respect_to``, since to
@@ -447,7 +475,7 @@ class Orderable(with_metaclass(OrderableBase, models.Model)):
         field = getattr(self.__class__, name)
         if isinstance(field, GenericForeignKey):
             names = (field.ct_field, field.fk_field)
-            return dict([(n, getattr(self, n)) for n in names])
+            return {n: getattr(self, n) for n in names}
         return {name: value}
 
     def save(self, *args, **kwargs):
@@ -459,7 +487,7 @@ class Orderable(with_metaclass(OrderableBase, models.Model)):
             lookup["_order__isnull"] = False
             concrete_model = base_concrete_model(Orderable, self)
             self._order = concrete_model.objects.filter(**lookup).count()
-        super(Orderable, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """
@@ -470,7 +498,7 @@ class Orderable(with_metaclass(OrderableBase, models.Model)):
         concrete_model = base_concrete_model(Orderable, self)
         after = concrete_model.objects.filter(**lookup)
         after.update(_order=models.F("_order") - 1)
-        super(Orderable, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
     def _get_next_or_previous_by_order(self, is_next, **kwargs):
         """
@@ -509,8 +537,12 @@ class Ownable(models.Model):
     Abstract model that provides ownership of an object for a user.
     """
 
-    user = models.ForeignKey(user_model_name, on_delete=models.CASCADE,
-        verbose_name=_("Author"), related_name="%(class)ss")
+    user = models.ForeignKey(
+        user_model_name,
+        on_delete=models.CASCADE,
+        verbose_name=_("Author"),
+        related_name="%(class)ss",
+    )
 
     class Meta:
         abstract = True
@@ -590,6 +622,7 @@ class ContentTyped(models.Model):
     - Include "admin/includes/content_typed_change_list.html" in the
     change_list.html template.
     """
+
     content_model = models.CharField(editable=False, max_length=50, null=True)
 
     class Meta:
@@ -607,8 +640,11 @@ class ContentTyped(models.Model):
     def get_content_models(cls):
         """ Return all subclasses of the concrete model.  """
         concrete_model = base_concrete_model(ContentTyped, cls)
-        return [m for m in apps.get_models()
-                if m is not concrete_model and issubclass(m, concrete_model)]
+        return [
+            m
+            for m in apps.get_models()
+            if m is not concrete_model and issubclass(m, concrete_model)
+        ]
 
     def set_content_model(self):
         """
@@ -616,17 +652,16 @@ class ContentTyped(models.Model):
         the base class.
         """
         if not self.content_model:
-            is_base_class = (
-                base_concrete_model(ContentTyped, self) == self.__class__)
+            is_base_class = base_concrete_model(ContentTyped, self) == self.__class__
             self.content_model = (
-                None if is_base_class else self.get_content_model_name())
+                None if is_base_class else self.get_content_model_name()
+            )
 
     def get_content_model(self):
         """
         Return content model, or if this is the base class return it.
         """
-        return (getattr(self, self.content_model) if self.content_model
-                else self)
+        return getattr(self, self.content_model) if self.content_model else self
 
 
 class SitePermission(models.Model):
@@ -636,10 +671,13 @@ class SitePermission(models.Model):
     access.
     """
 
-    user = models.OneToOneField(user_model_name, on_delete=models.CASCADE,
-        verbose_name=_("Author"), related_name="%(class)ss")
-    sites = models.ManyToManyField("sites.Site", blank=True,
-                                   verbose_name=_("Sites"))
+    user = models.OneToOneField(
+        user_model_name,
+        on_delete=models.CASCADE,
+        verbose_name=_("Author"),
+        related_name="%(class)ss",
+    )
+    sites = models.ManyToManyField("sites.Site", blank=True, verbose_name=_("Sites"))
 
     class Meta:
         verbose_name = _("Site permission")
