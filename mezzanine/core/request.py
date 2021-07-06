@@ -1,9 +1,6 @@
-from __future__ import unicode_literals
-
 import threading
 
 from mezzanine.utils.deprecation import MiddlewareMixin
-
 
 _thread_local = threading.local()
 
