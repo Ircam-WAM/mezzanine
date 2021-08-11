@@ -1,6 +1,5 @@
 import os
 
-from django import VERSION as DJANGO_VERSION
 from django.utils.translation import gettext_lazy as _
 
 ######################
@@ -130,6 +129,8 @@ AUTHENTICATION_BACKENDS = ("mezzanine.core.auth_backends.MezzanineBackend",)
 # a mode you'd pass directly to os.chmod.
 FILE_UPLOAD_PERMISSIONS = 0o644
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 #############
 # DATABASES #
@@ -206,9 +207,6 @@ TEMPLATES = [
                 "mezzanine.conf.context_processors.settings",
                 "mezzanine.pages.context_processors.page",
             ],
-            "builtins": [
-                "mezzanine.template.loader_tags",
-            ],
             "loaders": [
                 "mezzanine.template.loaders.host_themes.Loader",
                 "django.template.loaders.filesystem.Loader",
@@ -217,10 +215,6 @@ TEMPLATES = [
         },
     },
 ]
-
-if DJANGO_VERSION < (1, 9):
-    del TEMPLATES[0]["OPTIONS"]["builtins"]
-
 
 ################
 # APPLICATIONS #
@@ -244,7 +238,7 @@ INSTALLED_APPS = [
     "mezzanine.blog",
     "mezzanine.forms",
     "mezzanine.galleries",
-    "mezzanine.twitter",
+    # "mezzanine.twitter",
     # 'mezzanine.accounts',
 ]
 
@@ -268,11 +262,6 @@ MIDDLEWARE = (
     "mezzanine.pages.middleware.PageMiddleware",
     "mezzanine.core.middleware.FetchFromCacheMiddleware",
 )
-
-if DJANGO_VERSION < (1, 10):
-    MIDDLEWARE_CLASSES = MIDDLEWARE
-    del MIDDLEWARE
-
 
 # Store these package names here as they may change in the future since
 # at the moment we are using custom forks of them.
@@ -320,12 +309,8 @@ if os.path.exists(f):
 # DYNAMIC SETTINGS #
 ####################
 
-# set_dynamic_settings() will rewrite globals based on what has been
-# defined so far, in order to provide some better defaults where
-# applicable. We also allow this settings module to be imported
-# without Mezzanine installed, as the case may be when using the
-# fabfile, where setting the dynamic settings below isn't strictly
-# required.
+# set_dynamic_settings() will rewrite globals based on what has been defined so far, in
+# order to provide some better defaults where applicable.
 try:
     from mezzanine.utils.conf import set_dynamic_settings
 except ImportError:

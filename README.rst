@@ -1,6 +1,9 @@
 .. image:: https://img.shields.io/pypi/v/mezzanine.svg
    :target: https://pypi.org/project/mezzanine/
 .. image:: https://img.shields.io/pypi/pyversions/mezzanine.svg
+   :target: https://pypi.org/project/mezzanine/
+.. image:: https://img.shields.io/pypi/djversions/mezzanine.svg
+   :target: https://pypi.org/project/mezzanine/
 .. image:: https://github.com/stephenmcd/mezzanine/workflows/Test%20and%20release/badge.svg
    :target: https://github.com/stephenmcd/mezzanine/actions?query=workflow%3A%22Test+and+release%22
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
@@ -59,14 +62,11 @@ interface, Mezzanine provides the following:
 * `Search engine and API`_
 * Seamless integration with third-party Django apps
 * One step migration from other blogging engines
-* Automated production provisioning and deployments
 * `Disqus`_ integration, or built-in threaded comments
 * `Gravatar`_ integration
 * `Google Analytics`_ integration
-* `Twitter`_ feed integration
 * `bit.ly`_ integration
 * `Akismet`_ spam filtering
-* Built-in `test suite`_
 * `JVM`_ compatible (via `Jython`_)
 
 The Mezzanine admin dashboard:
@@ -158,10 +158,7 @@ Quotes
 .. _`dashboard`: http://mezzanine.jupo.org/docs/admin-customization.html#dashboard
 .. _`Free Themes`: https://github.com/thecodinghouse/mezzanine-themes
 .. _`Premium Themes`: http://mezzathe.me/
-.. _`@abhinavsohani`: https://twitter.com/abhinavsohani
-.. _`@joshcartme`: https://twitter.com/joshcartme
 .. _`Custom templates`: http://mezzanine.jupo.org/docs/content-architecture.html#page-templates
-.. _`test suite`: http://mezzanine.jupo.org/docs/packages.html#module-mezzanine.core.tests
 .. _`Multi-lingual sites`: http://mezzanine.jupo.org/docs/multi-lingual-sites.html
 .. _`JVM`: http://en.wikipedia.org/wiki/Java_virtual_machine
 .. _`Jython`: http://www.jython.org/
@@ -169,7 +166,6 @@ Quotes
 .. _`Disqus`: http://disqus.com/
 .. _`Gravatar`: http://gravatar.com/
 .. _`Google Analytics`: http://www.google.com/analytics/
-.. _`Twitter`: http://twitter.com/
 .. _`bit.ly`: http://bit.ly/
 .. _`Akismet`: http://akismet.com/
 .. _`GitHub`: http://github.com/stephenmcd/mezzanine/

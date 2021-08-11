@@ -22,13 +22,9 @@ if "DJANGO_SETTINGS_MODULE" not in os.environ:
     sys.path.insert(0, docs_path)
     sys.path.insert(0, os.path.realpath(os.path.join(*mezzanine_path_parts)))
     os.environ["DJANGO_SETTINGS_MODULE"] = "docs_settings"
-    # Django 1.7's setup is required before touching translated strings.
     import django
 
-    try:
-        django.setup()
-    except AttributeError:  # < 1.7
-        pass
+    django.setup()
 
 # When a full build is run (eg from the root of the repo), we
 # run all the Mezzanine utils for dynamically generated docs.
@@ -36,10 +32,7 @@ if sys.argv[-2:] == ["docs", "docs/build"]:
     from mezzanine.utils import docs
 
     docs.build_settings_docs(docs_path)
-    docs.build_deploy_docs(docs_path)
-    docs.build_changelog(docs_path)
     docs.build_modelgraph(docs_path)
-    docs.build_requirements(docs_path)
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -68,8 +61,8 @@ source_suffix = ".rst"
 #  Links for intersphinx mapping
 intersphinx_mapping = {
     "django": (
-        "http://docs.djangoproject.com/en/dev/",
-        "http://docs.djangoproject.com/en/dev/_objects/",
+        "https://docs.djangoproject.com/en/dev/",
+        "https://docs.djangoproject.com/en/dev/_objects/",
     ),
 }
 
@@ -112,7 +105,7 @@ exclude_trees = ["_build"]
 # List of files to be excluded when looking for source files.
 #  Added settings.rst its still will be included in configuration.rst
 #  only that prevents error of duplicate reference labels.
-exclude_patterns = ["settings.rst", "fabfile.rst"]
+exclude_patterns = ["settings.rst"]
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 # default_role = None

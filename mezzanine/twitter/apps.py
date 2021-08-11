@@ -1,9 +1,9 @@
 from django.apps import AppConfig
 
 
-class CoreConfig(AppConfig):
+class TwitterConfig(AppConfig):
 
-    name = "mezzanine.core"
+    name = "mezzanine.twitter"
 
     def ready(self):
         from . import checks  # noqa
