@@ -1,26 +1,23 @@
-from __future__ import unicode_literals
-from future.builtins import str
-
 from json import dumps
 from string import punctuation
 
 from django.apps import apps
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.messages import error
-from django.core.urlresolvers import reverse
 from django.db.models import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
-from django.utils.translation import ugettext_lazy as _
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 from mezzanine.conf import settings
-from mezzanine.generic.forms import ThreadedCommentForm, RatingForm
+from mezzanine.generic.forms import RatingForm, ThreadedCommentForm
 from mezzanine.generic.models import Keyword
 from mezzanine.utils.cache import add_cache_bypass
 from mezzanine.utils.deprecation import is_authenticated
-from mezzanine.utils.views import set_cookie, is_spam
 from mezzanine.utils.importing import import_dotted_path
+from mezzanine.utils.views import is_spam, set_cookie
 
 
 @staff_member_required
@@ -33,15 +30,17 @@ def admin_keywords_submit(request):
     keyword_ids, titles = [], []
     remove = punctuation.replace("-", "")  # Strip punctuation, allow dashes.
     for title in request.POST.get("text_keywords", "").split(","):
-        title = "".join([c for c in title if c not in remove]).strip()
+        title = "".join(c for c in title if c not in remove).strip()
         if title:
             kw, created = Keyword.objects.get_or_create_iexact(title=title)
             keyword_id = str(kw.id)
             if keyword_id not in keyword_ids:
                 keyword_ids.append(keyword_id)
                 titles.append(title)
-    return HttpResponse("%s|%s" % (",".join(keyword_ids), ", ".join(titles)),
-        content_type='text/plain')
+    return HttpResponse(
+        "{}|{}".format(",".join(keyword_ids), ", ".join(titles)),
+        content_type="text/plain",
+    )
 
 
 def initial_validation(request, prefix):
@@ -68,9 +67,14 @@ def initial_validation(request, prefix):
         if not is_authenticated(request.user):
             if request.method == "POST":
                 request.session[posted_session_key] = request.POST
-                error(request, _("You must be logged in. Please log in or "
-                                 "sign up to complete this action."))
-            redirect_url = "%s?next=%s" % (settings.LOGIN_URL, reverse(prefix))
+                error(
+                    request,
+                    _(
+                        "You must be logged in. Please log in or "
+                        "sign up to complete this action."
+                    ),
+                )
+            redirect_url = f"{settings.LOGIN_URL}?next={reverse(prefix)}"
         elif posted_session_key in request.session:
             post_data = request.session.pop(posted_session_key)
     if not redirect_url:
@@ -141,10 +145,10 @@ def rating(request):
             rating_name = obj.get_ratingfield_name()
             json = {}
             for f in ("average", "count", "sum"):
-                json["rating_" + f] = getattr(obj, "%s_%s" % (rating_name, f))
+                json["rating_" + f] = getattr(obj, f"{rating_name}_{f}")
             response = HttpResponse(dumps(json))
         if rating_form.undoing:
-            ratings = set(rating_form.previous) ^ set([rating_form.current])
+            ratings = set(rating_form.previous) ^ {rating_form.current}
         else:
             ratings = rating_form.previous + [rating_form.current]
         set_cookie(response, "mezzanine-rating", ",".join(ratings))

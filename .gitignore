@@ -9,12 +9,17 @@
 .DS_Store
 .coverage
 .idea/
+.pytest_cache
+junit/
 local_settings.py
 .eggs/
+.tox/
 Mezzanine.egg-info/
 build/
 docs/build/
+docs/_build/
 dist/
+htmlcov/
 mezzanine/project_template/static/
 /mezzanine/.project
 /mezzanine/.pydevproject
