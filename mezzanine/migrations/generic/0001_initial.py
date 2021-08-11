@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 from django.conf import settings
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -21,7 +22,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('_order', models.IntegerField(null=True, verbose_name='Order')),
                 ('object_pk', models.IntegerField()),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=django.db.models.deletion.SET_NULL)),
             ],
             options={
                 'ordering': ('_order',),
@@ -34,7 +35,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=500, verbose_name='Title')),
                 ('slug', models.CharField(help_text='Leave blank to have the URL auto-generated from the title.', max_length=2000, null=True, verbose_name='URL', blank=True)),
-                ('site', models.ForeignKey(editable=False, to='sites.Site')),
+                ('site', models.ForeignKey(editable=False, to='sites.Site', on_delete=django.db.models.deletion.SET_NULL)),
             ],
             options={
                 'verbose_name': 'Keyword',
@@ -49,8 +50,8 @@ class Migration(migrations.Migration):
                 ('value', models.IntegerField(verbose_name='Value')),
                 ('rating_date', models.DateTimeField(auto_now_add=True, verbose_name='Rating date', null=True)),
                 ('object_pk', models.IntegerField()),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
-                ('user', models.ForeignKey(related_name='ratings', verbose_name='Rater', to=settings.AUTH_USER_MODEL, null=True)),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=django.db.models.deletion.SET_NULL)),
+                ('user', models.ForeignKey(related_name='ratings', verbose_name='Rater', to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.SET_NULL)),
             ],
             options={
                 'verbose_name': 'Rating',
@@ -61,12 +62,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ThreadedComment',
             fields=[
-                ('comment_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='django_comments.Comment')),
+                ('comment_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='django_comments.Comment', on_delete=django.db.models.deletion.CASCADE)),
                 ('rating_count', models.IntegerField(default=0, editable=False)),
                 ('rating_sum', models.IntegerField(default=0, editable=False)),
                 ('rating_average', models.FloatField(default=0, editable=False)),
                 ('by_author', models.BooleanField(default=False, verbose_name='By the blog author')),
-                ('replied_to', models.ForeignKey(related_name='comments', editable=False, to='generic.ThreadedComment', null=True)),
+                ('replied_to', models.ForeignKey(related_name='comments', editable=False, to='generic.ThreadedComment', null=True, on_delete=django.db.models.deletion.SET_NULL)),
             ],
             options={
                 'verbose_name': 'Comment',
@@ -77,7 +78,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='assignedkeyword',
             name='keyword',
-            field=models.ForeignKey(related_name='assignments', verbose_name='Keyword', to='generic.Keyword'),
+            field=models.ForeignKey(related_name='assignments', verbose_name='Keyword', to='generic.Keyword', on_delete=django.db.models.deletion.SET_NULL),
             preserve_default=True,
         ),
     ]
