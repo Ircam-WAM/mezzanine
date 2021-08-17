@@ -118,7 +118,6 @@ def host_theme_path():
     # iteration of HOST_THEMES. We use the current site_id rather
     # than a request object here, as it may differ for admin users.
     domain = None
-
     for (host, theme) in settings.HOST_THEMES:
         current_site = current_site_id()
         if domain is None and current_site:
