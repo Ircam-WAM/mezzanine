@@ -7,16 +7,13 @@ from django.utils.translation import gettext_lazy as _
 
 from mezzanine.conf import settings
 from mezzanine.core.models import (
-<<<<<<< HEAD
     ContentTyped,
     Displayable,
     Orderable,
     RichText,
     wrapped_manager,
+    TeamOwnable
 )
-=======
-    ContentTyped, Displayable, Orderable, RichText, TeamOwnable)
->>>>>>> b9c7247c (Add class TeamOwnable)
 from mezzanine.pages.fields import MenusField
 from mezzanine.pages.managers import PageManager
 from mezzanine.utils.sites import override_current_site_id
@@ -36,12 +33,7 @@ class BasePage(Orderable, Displayable):
         abstract = True
 
 
-<<<<<<< HEAD
-class Page(BasePage, ContentTyped):
-=======
-@python_2_unicode_compatible
 class Page(TeamOwnable, BasePage, ContentTyped):
->>>>>>> b9c7247c (Add class TeamOwnable)
     """
     A page in the page tree. This is the base class that custom content types
     need to subclass.

@@ -293,9 +293,6 @@ class OwnableAdmin(admin.ModelAdmin):
         return qs.filter(user__id=request.user.id)
 
 
-<<<<<<< HEAD
-class ContentTypedAdmin:
-=======
 class TeamOwnableAdmin(OwnableAdmin):
     
     def get_queryset(self, request):
@@ -345,7 +342,6 @@ class TeamOwnableAdmin(OwnableAdmin):
 
 class ContentTypedAdmin(object):
 
->>>>>>> 932f8fd1 ([STMS Task #326] : author is editable only for superuser)
     def __init__(self, *args, **kwargs):
         """
         For subclasses that are registered with an Admin class
