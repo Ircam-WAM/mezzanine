@@ -56,11 +56,9 @@ class MenusField(MultiChoiceField):
         """
         if self._overridden_choices:
             # Note: choices is a property on Field bound to _get_choices().
-            print("hey")
             return self._choices
         else:
             menus = getattr(settings, "PAGE_MENU_TEMPLATES", [])
-            print(menus)
             return (m[:2] for m in menus)
 
     def _set_choices(self, choices):
