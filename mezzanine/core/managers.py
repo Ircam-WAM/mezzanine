@@ -359,34 +359,12 @@ class SearchableManager(Manager):
             search_no_displayable = set()
             models = set()
             parents = set()
-# <<<<<<< HEAD
-            errors = []
-            for name in settings.SEARCH_MODEL_CHOICES:
-                try:
-                    model = apps.get_model(*name.split(".", 1))
-                except LookupError:
-                    errors.append(name)
-                else:
-                    search_choices.add(model)
-            if errors:
-                raise ImproperlyConfigured(
-                    "Could not load the model(s) "
-                    "%s defined in the 'SEARCH_MODEL_CHOICES' setting."
-                    % ", ".join(errors)
-                )
-# =======
 
-# <<<<<<< HEAD
-            # self.__get_models_from_string(search_choices, 'SEARCH_MODEL_CHOICES')
-            # self.__get_models_from_string(search_parents, 'SEARCH_PARENTS_MODELS')
-# >>>>>>> 63ad6bb9 ([Search] : possibility to re-add excluded models (parents) from search results)
-# =======
-#             self.__get_models_from_string(search_choices, 'SEARCH_MODEL_CHOICES')
-#             self.__get_models_from_string(search_parents, 'SEARCH_PARENTS_MODELS')
-#             self.__get_models_from_string(search_no_displayable, 'SEARCH_MODEL_NO_DISPLAYABLE')
-# >>>>>>> 43751e6e (Allow no Displayable models to be searched)
-
-# Deux commits ici à testé
+            self.__get_models_from_string(search_choices, 'SEARCH_MODEL_CHOICES')
+            self.__get_models_from_string(search_parents, 'SEARCH_PARENTS_MODELS')
+            self.__get_models_from_string(
+                search_no_displayable, 'SEARCH_MODEL_NO_DISPLAYABLE'
+            )
 
             for model in apps.get_models():
                 
@@ -401,13 +379,15 @@ class SearchableManager(Manager):
                 in_choices = not search_choices or model in search_choices
                 in_choices = in_choices or this_parents & search_choices
 
-                if is_subclass or is_not_displayale and (in_choices or not search_choices):
+                if is_subclass or\
+                        is_not_displayale and\
+                        (in_choices or not search_choices):
                     # Add to models we'll seach. Also maintain a parent
                     # set, used below for further refinement of models
                     # list to search.
                     models.add(model)
-                    for parent in this_parents :
-                        if not parent in search_parents :
+                    for parent in this_parents:
+                        if parent not in search_parents:
                             parents.update(this_parents)
             # Strip out any models that are superclasses of models,
             # specifically the Page model which will generally be the
