@@ -1,10 +1,6 @@
 from unittest import skipUnless
-<<<<<<< HEAD:tests/test_pages.py
 from urllib.parse import urlparse
-
-=======
 from unittest import skip
->>>>>>> d6846119 (skip tests failing because of translation):mezzanine/pages/tests.py
 from django.apps import apps
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
