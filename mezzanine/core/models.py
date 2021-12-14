@@ -17,6 +17,8 @@ from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTe
 
 from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
 
+from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
+
 from mezzanine.conf import settings
 from mezzanine.core.fields import OrderField, RichTextField
 from mezzanine.core.managers import CurrentSiteManager, DisplayableManager

@@ -16,6 +16,8 @@ from organization.core.utils import getUsersListOfSameTeams
 
 from organization.core.utils import getUsersListOfSameTeams
 
+from organization.core.utils import getUsersListOfSameTeams
+
 from mezzanine.conf import settings
 from mezzanine.core.forms import DynamicInlineAdminForm
 from mezzanine.core.utils import has_content_type_perm
@@ -321,6 +323,7 @@ class TeamOwnableAdmin(OwnableAdmin):
 
         if has_content_type_perm(request.user, self.model, 'user_edit'):
             return super(TeamOwnableAdmin, self).get_queryset(request)
+
         return qs
     
     def has_delete_permission(self, request, obj=None):
