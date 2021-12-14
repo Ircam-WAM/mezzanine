@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-import os
-import sys
-from shutil import rmtree
-from setuptools import setup, find_packages
-from mezzanine import __version__ as version
+from setuptools import setup
 
+<<<<<<< HEAD
+setup()
+=======
 
 exclude = ["mezzanine/project_template/dev.db",
            "mezzanine/project_template/project_name/local_settings.py"]
@@ -99,3 +97,4 @@ finally:
                 os.chmod(e, stat.st_mode)
             except:
                 pass
+>>>>>>> 711f42ce68f843f511bec16f048afce519b0f682

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import os
 import sys
 import threading
@@ -11,9 +9,7 @@ from mezzanine.conf import settings
 from mezzanine.core.request import current_request
 from mezzanine.utils.conf import middlewares_or_subclasses_installed
 
-
-SITE_PERMISSION_MIDDLEWARE = \
-    "mezzanine.core.middleware.SitePermissionMiddleware"
+SITE_PERMISSION_MIDDLEWARE = "mezzanine.core.middleware.SitePermissionMiddleware"
 
 
 def current_site_id():
@@ -39,34 +35,44 @@ def current_site_id():
     if hasattr(override_current_site_id.thread_local, "site_id"):
         return override_current_site_id.thread_local.site_id
 
-    from mezzanine.utils.cache import cache_installed, cache_get, cache_set
+    from mezzanine.utils.cache import cache_get, cache_installed, cache_set
+
     request = current_request()
-    site_id = getattr(request, "site_id", None)
-    if request and not site_id:
-        site_id = request.session.get("site_id", None)
-        if not site_id:
-            domain = request.get_host().lower()
-            if cache_installed():
-                # Don't use Mezzanine's cache_key_prefix here, since it
-                # uses this very function we're in right now to create a
-                # per-site cache key.
-                bits = (settings.CACHE_MIDDLEWARE_KEY_PREFIX, domain)
-                cache_key = "%s.site_id.%s" % bits
-                site_id = cache_get(cache_key)
+    if settings.MULTIPLE_DOMAIN_SETTING_ALLOWED:
+        site_id = getattr(request, "site_id", None)
+
+        if request and not site_id:
+            site_id = request.session.get("site_id", None)
             if not site_id:
-                try:
-                    site = Site.objects.get(domain__iexact=domain)
-                except Site.DoesNotExist:
-                    pass
-                else:
-                    site_id = site.id
-                    if cache_installed():
-                        cache_set(cache_key, site_id)
-    # Executed when application is restarting
-    if not site_id:
-        site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
-    if request and site_id and not getattr(settings, "TESTING", False):
-        request.site_id = site_id
+                domain = request.get_host().lower()
+                if cache_installed():
+                    # Don't use Mezzanine's cache_key_prefix here, since it
+                    # uses this very function we're in right now to create a
+                    # per-site cache key.
+                    bits = (settings.CACHE_MIDDLEWARE_KEY_PREFIX, domain)
+                    cache_key = "%s.site_id.%s" % bits
+                    site_id = cache_get(cache_key)
+                if not site_id:
+                    try:
+                        site = Site.objects.get(domain__iexact=domain)
+                    except Site.DoesNotExist:
+                        pass
+                    else:
+                        site_id = site.id
+                        if cache_installed():
+                            cache_set(cache_key, site_id)
+        # Executed when application is restarting
+        if not site_id and settings.DEBUG:
+            # FIXME: settings.DEBUG condition added to allow multiple site_id
+            # against multiple settings.HOST_THEMES in production
+            site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
+        if request and site_id and not getattr(settings, "TESTING", False):
+            request.site_id = site_id
+    else:
+        try:
+            site_id = Site.objects.get(domain=request.environ["HTTP_HOST"]).id
+        except Exception:
+            site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
     return site_id
 
 
@@ -77,8 +83,14 @@ def override_current_site_id(site_id):
     within it. Used to access SiteRelated objects outside the current site.
     """
     override_current_site_id.thread_local.site_id = site_id
-    yield
-    del override_current_site_id.thread_local.site_id
+    try:
+        yield
+    except Exception:
+        raise
+    finally:
+        del override_current_site_id.thread_local.site_id
+
+
 override_current_site_id.thread_local = threading.local()
 
 

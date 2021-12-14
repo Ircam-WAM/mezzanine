@@ -1,32 +1,29 @@
-from __future__ import unicode_literals
-
-import django
-from future.builtins import int, zip
-
 from functools import reduce
-from operator import ior, iand
+from operator import iand, ior
 from string import punctuation
 
+import django
 from django.apps import apps
+from django.contrib.sites.managers import CurrentSiteManager as DjangoCSM
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Manager, Q, CharField, TextField
+from django.db.models import CharField, Manager, Q, TextField
 from django.db.models.manager import ManagerDescriptor
 from django.db.models.query import QuerySet
-from django.contrib.sites.managers import CurrentSiteManager as DjangoCSM
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from mezzanine.conf import settings
 from mezzanine.utils.sites import current_site_id
 from mezzanine.utils.urls import home_slug
 
-
 if django.VERSION >= (1, 10):
+
     class ManagerDescriptor(ManagerDescriptor):
         """
         This class exists purely to skip the abstract model check
         in the __get__ method of Django's ManagerDescriptor.
         """
+
         def __get__(self, instance, cls=None):
             if instance is not None:
                 raise AttributeError(
@@ -39,7 +36,8 @@ if django.VERSION >= (1, 10):
             if cls._meta.swapped:
                 raise AttributeError(
                     "Manager isn't available; "
-                    "'%s.%s' has been swapped for '%s'" % (
+                    "'%s.%s' has been swapped for '%s'"
+                    % (
                         cls._meta.app_label,
                         cls._meta.object_name,
                         cls._meta.swapped,
@@ -62,12 +60,14 @@ class PublishedManager(Manager):
         current date when specified.
         """
         from mezzanine.core.models import CONTENT_STATUS_PUBLISHED
+
         if for_user is not None and for_user.is_staff:
             return self.all()
         return self.filter(
             Q(publish_date__lte=now()) | Q(publish_date__isnull=True),
             Q(expiry_date__gte=now()) | Q(expiry_date__isnull=True),
-            Q(status=CONTENT_STATUS_PUBLISHED))
+            Q(status=CONTENT_STATUS_PUBLISHED),
+        )
 
     def get_by_natural_key(self, slug):
         return self.get(slug=slug)
@@ -100,7 +100,7 @@ class SearchableQuerySet(QuerySet):
         self._search_ordered = False
         self._search_terms = set()
         self._search_fields = kwargs.pop("search_fields", {})
-        super(SearchableQuerySet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def search(self, query, search_fields=None):
         """
@@ -122,23 +122,28 @@ class SearchableQuerySet(QuerySet):
         # ### BUILD LIST OF TERMS TO SEARCH FOR ###
 
         # Remove extra spaces, put modifiers inside quoted terms.
-        terms = " ".join(query.split()).replace("+ ", "+")     \
-                                       .replace('+"', '"+')    \
-                                       .replace("- ", "-")     \
-                                       .replace('-"', '"-')    \
-                                       .split('"')
+        terms = (
+            " ".join(query.split())
+            .replace("+ ", "+")
+            .replace('+"', '"+')
+            .replace("- ", "-")
+            .replace('-"', '"-')
+            .split('"')
+        )
         # Strip punctuation other than modifiers from terms and create
         # terms list, first from quoted terms and then remaining words.
-        terms = [("" if t[0:1] not in "+-" else t[0:1]) + t.strip(punctuation)
-            for t in terms[1::2] + "".join(terms[::2]).split()]
+        terms = [
+            ("" if t[0:1] not in "+-" else t[0:1]) + t.strip(punctuation)
+            for t in terms[1::2] + "".join(terms[::2]).split()
+        ]
         # Remove stop words from terms that aren't quoted or use
         # modifiers, since words with these are an explicit part of
         # the search query. If doing so ends up with an empty term
         # list, then keep the stop words.
-        terms_no_stopwords = [t for t in terms if t.lower() not in
-            settings.STOP_WORDS]
-        get_positive_terms = lambda terms: [t.lower().strip(punctuation)
-            for t in terms if t[0:1] != "-"]
+        terms_no_stopwords = [t for t in terms if t.lower() not in settings.STOP_WORDS]
+        get_positive_terms = lambda terms: [
+            t.lower().strip(punctuation) for t in terms if t[0:1] != "-"
+        ]
         positive_terms = get_positive_terms(terms_no_stopwords)
         if positive_terms:
             terms = terms_no_stopwords
@@ -154,12 +159,32 @@ class SearchableQuerySet(QuerySet):
         # ### BUILD QUERYSET FILTER ###
 
         # Create the queryset combining each set of terms.
-        excluded = [reduce(iand, [~Q(**{"%s__icontains" % f: t[1:]}) for f in
-            self._search_fields.keys()]) for t in terms if t[0:1] == "-"]
-        required = [reduce(ior, [Q(**{"%s__icontains" % f: t[1:]}) for f in
-            self._search_fields.keys()]) for t in terms if t[0:1] == "+"]
-        optional = [reduce(ior, [Q(**{"%s__icontains" % f: t}) for f in
-            self._search_fields.keys()]) for t in terms if t[0:1] not in "+-"]
+        excluded = [
+            reduce(
+                iand,
+                [
+                    ~Q(**{"%s__icontains" % f: t[1:]})
+                    for f in self._search_fields.keys()
+                ],
+            )
+            for t in terms
+            if t[0:1] == "-"
+        ]
+        required = [
+            reduce(
+                ior,
+                [Q(**{"%s__icontains" % f: t[1:]}) for f in self._search_fields.keys()],
+            )
+            for t in terms
+            if t[0:1] == "+"
+        ]
+        optional = [
+            reduce(
+                ior, [Q(**{"%s__icontains" % f: t}) for f in self._search_fields.keys()]
+            )
+            for t in terms
+            if t[0:1] not in "+-"
+        ]
         queryset = self
         if excluded:
             queryset = queryset.filter(reduce(iand, excluded))
@@ -175,9 +200,11 @@ class SearchableQuerySet(QuerySet):
         """
         Ensure attributes are copied to subsequent queries.
         """
-        for attr in ("_search_terms", "_search_fields", "_search_ordered"):
-            kwargs[attr] = getattr(self, attr)
-        return super(SearchableQuerySet, self)._clone(*args, **kwargs)
+        clone = super()._clone(*args, **kwargs)
+        clone._search_terms = self._search_terms
+        clone._search_fields = self._search_fields
+        clone._search_ordered = self._search_ordered
+        return clone
 
     def order_by(self, *field_names):
         """
@@ -185,7 +212,7 @@ class SearchableQuerySet(QuerySet):
         """
         if not self._search_ordered:
             self._search_ordered = len(self._search_terms) > 0
-        return super(SearchableQuerySet, self).order_by(*field_names)
+        return super().order_by(*field_names)
 
     def annotate_scores(self):
         """
@@ -201,7 +228,7 @@ class SearchableQuerySet(QuerySet):
         we assume one match for one of the fields, and use the average
         weight of all search fields with relationships.
         """
-        results = super(SearchableQuerySet, self).iterator()
+        results = super().iterator()
         if self._search_terms and not self._search_ordered:
             results = list(results)
             for i, result in enumerate(results):
@@ -220,7 +247,7 @@ class SearchableQuerySet(QuerySet):
                 if hasattr(result, 'publish_date'):
                     age = (now() - result.publish_date).total_seconds()
                     if age > 0:
-                        count = count / age**settings.SEARCH_AGE_SCALE_FACTOR
+                        count = count / age ** settings.SEARCH_AGE_SCALE_FACTOR
 
                 results[i].result_count = count
             return iter(results)
@@ -237,7 +264,7 @@ class SearchableManager(Manager):
 
     def __init__(self, *args, **kwargs):
         self._search_fields = kwargs.pop("search_fields", {})
-        super(SearchableManager, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_search_fields(self):
         """
@@ -284,7 +311,7 @@ class SearchableManager(Manager):
         accessed from abstract classes, which is behaviour the search
         API has always relied on. Here we reinstate it.
         """
-        super(SearchableManager, self).contribute_to_class(model, name)
+        super().contribute_to_class(model, name)
         setattr(model, name, ManagerDescriptor(self))
 
     def __get_models_from_string(self, set_of_objects, setting_str):
@@ -315,10 +342,8 @@ class SearchableManager(Manager):
         if not settings.SEARCH_MODEL_CHOICES:
             # No choices defined - build a list of leaf models (those
             # without subclasses) that inherit from Displayable.
-            models = [m for m in apps.get_models()
-                      if issubclass(m, self.model)]
-            parents = reduce(ior, [set(m._meta.get_parent_list())
-                                   for m in models])
+            models = [m for m in apps.get_models() if issubclass(m, self.model)]
+            parents = reduce(ior, [set(m._meta.get_parent_list()) for m in models])
             models = [m for m in models if m not in parents]
         elif getattr(self.model._meta, "abstract", False):
             # When we're combining model subclasses for an abstract
@@ -337,7 +362,9 @@ class SearchableManager(Manager):
 
             self.__get_models_from_string(search_choices, 'SEARCH_MODEL_CHOICES')
             self.__get_models_from_string(search_parents, 'SEARCH_PARENTS_MODELS')
-            self.__get_models_from_string(search_no_displayable, 'SEARCH_MODEL_NO_DISPLAYABLE')
+            self.__get_models_from_string(
+                search_no_displayable, 'SEARCH_MODEL_NO_DISPLAYABLE'
+            )
 
             for model in apps.get_models():
                 
@@ -352,13 +379,15 @@ class SearchableManager(Manager):
                 in_choices = not search_choices or model in search_choices
                 in_choices = in_choices or this_parents & search_choices
 
-                if is_subclass or is_not_displayale and (in_choices or not search_choices):
+                if is_subclass or\
+                        is_not_displayale and\
+                        (in_choices or not search_choices):
                     # Add to models we'll seach. Also maintain a parent
                     # set, used below for further refinement of models
                     # list to search.
                     models.add(model)
-                    for parent in this_parents :
-                        if not parent in search_parents :
+                    for parent in this_parents:
+                        if parent not in search_parents:
                             parents.update(this_parents)
             # Strip out any models that are superclasses of models,
             # specifically the Page model which will generally be the
@@ -376,8 +405,8 @@ class SearchableManager(Manager):
             except AttributeError:
                 queryset = model.objects.get_queryset()
             all_results.extend(
-                queryset.search(*args, **kwargs).annotate_scores())
-
+                queryset.search(*args, **kwargs).annotate_scores()
+            )
         return sorted(all_results, key=lambda r: r.result_count, reverse=True)
 
 
@@ -411,8 +440,7 @@ class CurrentSiteManager(DjangoCSM):
         return queryset
 
 
-class DisplayableManager(CurrentSiteManager, PublishedManager,
-                         SearchableManager):
+class DisplayableManager(CurrentSiteManager, PublishedManager, SearchableManager):
     """
     Manually combines ``CurrentSiteManager``, ``PublishedManager``
     and ``SearchableManager`` for the ``Displayable`` model.
@@ -425,16 +453,21 @@ class DisplayableManager(CurrentSiteManager, PublishedManager,
         instances, including a fake homepage instance if none exists.
         Used in ``mezzanine.core.sitemaps``.
         """
+
         class Home:
             title = _("Home")
+
         home = Home()
         setattr(home, "get_absolute_url", home_slug)
         items = {home.get_absolute_url(): home}
         for model in apps.get_models():
             if issubclass(model, self.model):
-                for item in (model.objects.published(for_user=for_user)
-                                  .filter(**kwargs)
-                                  .exclude(slug__startswith="http://")
-                                  .exclude(slug__startswith="https://")):
-                    items[item.get_absolute_url()] = item
+                if hasattr(model.objects, "published"):
+                    for item in (
+                        model.objects.published(for_user=for_user)
+                        .filter(**kwargs)
+                        .exclude(slug__startswith="http://")
+                        .exclude(slug__startswith="https://")
+                    ):
+                        items[item.get_absolute_url()] = item
         return items
