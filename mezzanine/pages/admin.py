@@ -7,7 +7,6 @@ from django.shortcuts import get_object_or_404
 
 from mezzanine.conf import settings
 from mezzanine.core.admin import (
-<<<<<<< HEAD
     ContentTypedAdmin,
     DisplayableAdmin,
     DisplayableAdminForm,
@@ -17,13 +16,6 @@ from mezzanine.pages.models import Link, Page, RichTextPage
 
 from mezzanine.utils.urls import clean_slashes
 
-=======
-    ContentTypedAdmin, DisplayableAdmin, DisplayableAdminForm, TeamOwnableAdmin)
-
-from mezzanine.pages.models import Page, RichTextPage, Link
-from mezzanine.utils.urls import clean_slashes
-
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
 # Add extra fields for pages to the Displayable fields.
 # We only add the menu field if PAGE_MENU_TEMPLATES has values.
 page_fieldsets = deepcopy(DisplayableAdmin.fieldsets)

@@ -6,10 +6,7 @@ from decimal import Decimal
 import mezzanine.utils.models
 import mezzanine.core.fields
 import cartridge.shop.fields
-<<<<<<< HEAD
 import django.db.models.deletion
-=======
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
 
 from mezzanine.conf import settings
 
@@ -42,11 +39,7 @@ class Migration(migrations.Migration):
                 ('total_price', cartridge.shop.fields.MoneyField(decimal_places=2, default=Decimal('0'), max_digits=10, blank=True, null=True, verbose_name='Total price')),
                 ('url', models.CharField(max_length=2000)),
                 ('image', models.CharField(max_length=200, null=True)),
-<<<<<<< HEAD
                 ('cart', models.ForeignKey(related_name='items', to='shop.Cart', on_delete=django.db.models.deletion.CASCADE)),
-=======
-                ('cart', models.ForeignKey(related_name='items', to='shop.Cart')),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
             ],
             options={
                 'abstract': False,
@@ -56,11 +49,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Category',
             fields=[
-<<<<<<< HEAD
                 ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='pages.Page', on_delete=django.db.models.deletion.CASCADE)),
-=======
-                ('page_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='pages.Page')),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
                 ('content', mezzanine.core.fields.RichTextField(verbose_name='Content')),
                 ('featured_image', mezzanine.core.fields.FileField(max_length=255, null=True, verbose_name='Featured Image', blank=True)),
                 ('price_min', cartridge.shop.fields.MoneyField(null=True, verbose_name='Minimum price', max_digits=10, decimal_places=2, blank=True)),
@@ -132,11 +121,7 @@ class Migration(migrations.Migration):
                 ('total', cartridge.shop.fields.MoneyField(null=True, verbose_name='Order total', max_digits=10, decimal_places=2, blank=True)),
                 ('transaction_id', models.CharField(max_length=255, null=True, verbose_name='Transaction ID', blank=True)),
                 ('status', models.IntegerField(default=settings.SHOP_ORDER_STATUS_CHOICES[0][0], verbose_name='Status', choices=settings.SHOP_ORDER_STATUS_CHOICES)),
-<<<<<<< HEAD
                 ('site', models.ForeignKey(editable=False, to='sites.Site',on_delete=django.db.models.deletion.SET_NULL)),
-=======
-                ('site', models.ForeignKey(editable=False, to='sites.Site')),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
             ],
             options={
                 'ordering': ('-id',),
@@ -154,11 +139,7 @@ class Migration(migrations.Migration):
                 ('quantity', models.IntegerField(default=0, verbose_name='Quantity')),
                 ('unit_price', cartridge.shop.fields.MoneyField(decimal_places=2, default=Decimal('0'), max_digits=10, blank=True, null=True, verbose_name='Unit price')),
                 ('total_price', cartridge.shop.fields.MoneyField(decimal_places=2, default=Decimal('0'), max_digits=10, blank=True, null=True, verbose_name='Total price')),
-<<<<<<< HEAD
                 ('order', models.ForeignKey(related_name='items', to='shop.Order', on_delete=django.db.models.deletion.CASCADE)),
-=======
-                ('order', models.ForeignKey(related_name='items', to='shop.Order')),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
             ],
             options={
                 'abstract': False,
@@ -198,11 +179,7 @@ class Migration(migrations.Migration):
                 ('date_added', models.DateTimeField(auto_now_add=True, verbose_name='Date added', null=True)),
                 ('categories', models.ManyToManyField(to='shop.Category', verbose_name='Product categories', blank=True)),
                 ('related_products', models.ManyToManyField(related_name='related_products_rel_+', verbose_name='Related products', to='shop.Product', blank=True)),
-<<<<<<< HEAD
                 ('site', models.ForeignKey(editable=False, to='sites.Site', on_delete=django.db.models.deletion.SET_NULL)),
-=======
-                ('site', models.ForeignKey(editable=False, to='sites.Site')),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
                 ('upsell_products', models.ManyToManyField(related_name='upsell_products_rel_+', verbose_name='Upsell products', to='shop.Product', blank=True)),
             ],
             options={
@@ -218,11 +195,7 @@ class Migration(migrations.Migration):
                 ('timestamp', models.IntegerField()),
                 ('total_cart', models.IntegerField(default=0)),
                 ('total_purchase', models.IntegerField(default=0)),
-<<<<<<< HEAD
                 ('product', models.ForeignKey(related_name='actions', to='shop.Product', on_delete=django.db.models.deletion.CASCADE)),
-=======
-                ('product', models.ForeignKey(related_name='actions', to='shop.Product')),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
             ],
             options={
             },
@@ -235,11 +208,7 @@ class Migration(migrations.Migration):
                 ('_order', models.IntegerField(null=True, verbose_name='Order')),
                 ('file', models.ImageField(upload_to='product', verbose_name='Image')),
                 ('description', models.CharField(max_length=100, verbose_name='Description', blank=True)),
-<<<<<<< HEAD
                 ('product', models.ForeignKey(related_name='images', to='shop.Product',on_delete=django.db.models.deletion.CASCADE)),
-=======
-                ('product', models.ForeignKey(related_name='images', to='shop.Product')),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
             ],
             options={
                 'ordering': ('_order',),
@@ -275,13 +244,8 @@ class Migration(migrations.Migration):
                 ('default', models.BooleanField(default=False, verbose_name='Default')),
                 ('option1', cartridge.shop.fields.OptionField(max_length=50, null=True, verbose_name='Size')),
                 ('option2', cartridge.shop.fields.OptionField(max_length=50, null=True, verbose_name='Colour')),
-<<<<<<< HEAD
                 ('image', models.ForeignKey(verbose_name='Image', blank=True, to='shop.ProductImage', null=True, on_delete=django.db.models.deletion.SET_NULL)),
                 ('product', models.ForeignKey(related_name='variations', to='shop.Product', on_delete=django.db.models.deletion.SET_NULL)),
-=======
-                ('image', models.ForeignKey(verbose_name='Image', blank=True, to='shop.ProductImage', null=True)),
-                ('product', models.ForeignKey(related_name='variations', to='shop.Product')),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
             ],
             options={
                 'ordering': ('-default',),
@@ -333,11 +297,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='category',
             name='sale',
-<<<<<<< HEAD
             field=models.ForeignKey(verbose_name='Sale', blank=True, to='shop.Sale', null=True, on_delete=django.db.models.deletion.SET_NULL),
-=======
-            field=models.ForeignKey(verbose_name='Sale', blank=True, to='shop.Sale', null=True),
->>>>>>> 711f42ce68f843f511bec16f048afce519b0f682
             preserve_default=True,
         ),
     ]
