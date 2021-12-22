@@ -13,17 +13,11 @@ from django.utils.timezone import now
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
-from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
-
-from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
-
-from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
+from core.utils import usersTeamsIntersection, getUsersListOfSameTeams
 
 from mezzanine.conf import settings
 from mezzanine.core.fields import OrderField, RichTextField
 from mezzanine.core.managers import CurrentSiteManager, DisplayableManager
-from mezzanine.core.fields import RichTextField, OrderField
-from mezzanine.core.managers import DisplayableManager, CurrentSiteManager
 from mezzanine.core.utils import has_content_type_perm
 from mezzanine.generic.fields import KeywordsField
 from mezzanine.utils.html import TagCloser
