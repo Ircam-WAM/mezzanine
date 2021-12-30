@@ -13,7 +13,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import usersTeamsIntersection, getUsersListOfSameTeams
+from organization.core.utils import usersTeamsIntersection, getUsersListOfSameTeams
 
 from mezzanine.conf import settings
 from mezzanine.core.fields import OrderField, RichTextField

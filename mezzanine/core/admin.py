@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import NoReverseMatch
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import getUsersListOfSameTeams
+from organization.core.utils import getUsersListOfSameTeams
 
 from mezzanine.conf import settings
 from mezzanine.core.forms import DynamicInlineAdminForm
