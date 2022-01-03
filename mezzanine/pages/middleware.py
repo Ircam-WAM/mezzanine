@@ -6,6 +6,7 @@ from mezzanine.conf import settings
 from mezzanine.pages import context_processors, page_processors
 from mezzanine.pages.models import Page
 from mezzanine.pages.views import page as page_view
+from utils.views import www_page
 from mezzanine.utils.conf import middlewares_or_subclasses_installed
 from mezzanine.utils.deprecation import MiddlewareMixin, is_authenticated
 from mezzanine.utils.urls import path_to_slug
@@ -57,7 +58,6 @@ class PageMiddleware(MiddlewareMixin):
         """
         Per-request mechanics for the current page object.
         """
-
         # Load the closest matching page by slug, and assign it to the
         # request object. If none found, skip all further processing.
         slug = path_to_slug(request.path_info)
@@ -74,7 +74,6 @@ class PageMiddleware(MiddlewareMixin):
         # Handle ``page.login_required``.
         if page.login_required and not is_authenticated(request.user):
             return redirect_to_login(request.get_full_path())
-
         # If the view isn't Mezzanine's page view, try to return the result
         # immediately. In the case of a 404 with an URL slug that matches a
         # page exactly, swallow the exception and try Mezzanine's page view.
@@ -84,13 +83,12 @@ class PageMiddleware(MiddlewareMixin):
         # /blog/about/, which would match the blog urlpattern, and assuming
         # there wasn't a blog post with the slug "about", would raise a 404
         # and subsequently be rendered by Mezzanine's page view.
-        if view_func != page_view:
+        if view_func != page_view and view_func != www_page:
             try:
                 return view_func(request, *view_args, **view_kwargs)
             except Http404:
                 if page.slug != slug:
                     raise
-
         # Run page processors.
         extra_context = {}
         if request.resolver_match:
@@ -116,5 +114,4 @@ class PageMiddleware(MiddlewareMixin):
                         % (name, type(processor_response))
                     )
                     raise ValueError(error)
-
-        return page_view(request, slug, extra_context=extra_context)
+        return view_func(request, slug, extra_context=extra_context)
