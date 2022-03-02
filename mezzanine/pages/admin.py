@@ -34,8 +34,8 @@ class PageAdminForm(DisplayableAdminForm):
         """
         self.instance._old_slug = self.instance.slug
         new_slug = self.cleaned_data["slug"]
-        if not isinstance(self.instance, Link) and new_slug != "/":
-            new_slug = clean_slashes(self.cleaned_data["slug"])
+        # if not isinstance(self.instance, Link) and new_slug != "/":
+        #     new_slug = clean_slashes(self.cleaned_data["slug"])
         return new_slug
 
 

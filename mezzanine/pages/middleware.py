@@ -61,9 +61,19 @@ class PageMiddleware(MiddlewareMixin):
         # Load the closest matching page by slug, and assign it to the
         # request object. If none found, skip all further processing.
         slug = path_to_slug(request.path_info)
+        if not slug.endswith('/') and settings.APPEND_SLASH:
+            slug = slug + '/'
         pages = Page.objects.with_ascendants_for_slug(
             slug, for_user=request.user, include_login_required=True
         )
+        if not pages:
+            slug = path_to_slug(request.path_info)
+            if slug.endswith('/'):
+                slug = slug[:-1]
+            pages = Page.objects.with_ascendants_for_slug(
+                slug, for_user=request.user, include_login_required=True
+            )
+
         if pages:
             page = pages[0]
             setattr(request, "page", page)

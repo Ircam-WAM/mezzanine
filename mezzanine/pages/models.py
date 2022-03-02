@@ -245,7 +245,16 @@ class Page(TeamOwnable, BasePage, ContentTyped):
             # No request context, most likely when tests are run.
             self.is_current = False
         else:
-            self.is_current = self.slug == path_to_slug(request.path_info)
+            slug = path_to_slug(request.path_info)
+            slug2 = slug
+            if not slug.endswith('/') and settings.APPEND_SLASH:
+                slug2 = slug + '/'
+            self.is_current = self.slug == slug2
+            if not self.is_current:
+                slug2 = slug
+                if slug.endswith('/'):
+                    slug2 = slug[:-1]
+                self.is_current = self.slug == slug2
 
         # Is the current page me or any page up the parent chain?
         def is_c_or_a(page_id):

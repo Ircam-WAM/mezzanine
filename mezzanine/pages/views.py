@@ -4,6 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
+from django.conf import settings
 
 from mezzanine.pages.models import Page, PageMoveException
 from mezzanine.utils.urls import home_slug
@@ -73,7 +74,13 @@ def page(request, slug, template="pages/page.html", extra_context=None):
             "settings.MIDDLEWARE"
         )
 
-    if not hasattr(request, "page") or request.page.slug != slug:
+    if hasattr(request, "page"):
+        slug2 = request.page.slug
+        if not slug2.endswith('/') and settings.APPEND_SLASH:
+            slug2 = slug2 + '/'
+        elif slug2 != slug:
+            raise Http404
+    else:
         raise Http404
 
     # Check for a template name matching the page's slug. If the homepage
