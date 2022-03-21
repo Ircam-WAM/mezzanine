@@ -776,7 +776,7 @@ msgstr "Erreur"
 
 #: templates/errors/500.html:16
 msgid "Sorry, an error occurred."
-msgstr "Une erreur est survenue, nous en sommes désolé."
+msgstr "Une erreur est survenue, nous en sommes désolés."
 
 #: templates/includes/editable_form.html:16
 msgid "Save"
