@@ -10,6 +10,7 @@ from mezzanine.core.admin import (
     ContentTypedAdmin,
     DisplayableAdmin,
     DisplayableAdminForm,
+    TeamOwnableAdmin
 )
 from mezzanine.pages.models import Link, Page, RichTextPage
 from mezzanine.utils.urls import clean_slashes
@@ -19,6 +20,7 @@ from mezzanine.utils.urls import clean_slashes
 page_fieldsets = deepcopy(DisplayableAdmin.fieldsets)
 if settings.PAGE_MENU_TEMPLATES:
     page_fieldsets[0][1]["fields"] += ("in_menus",)
+    page_fieldsets[0][1]["fields"] += ("user",)
 page_fieldsets[0][1]["fields"] += ("login_required",)
 
 
@@ -36,13 +38,12 @@ class PageAdminForm(DisplayableAdminForm):
         return new_slug
 
 
-class PageAdmin(ContentTypedAdmin, DisplayableAdmin):
+class PageAdmin(TeamOwnableAdmin, ContentTypedAdmin, DisplayableAdmin):
     """
     Admin class for the ``Page`` model and all subclasses of
     ``Page``. Handles redirections between admin interfaces for the
     ``Page`` model and its subclasses.
     """
-
     form = PageAdminForm
     fieldsets = page_fieldsets
     change_list_template = "admin/pages/page/change_list.html"
@@ -156,6 +157,10 @@ class PageAdmin(ContentTypedAdmin, DisplayableAdmin):
                 return (unordered, page.meta_verbose_name)
 
         return sorted(models, key=sort_key)
+
+    def changelist_view(self, request, extra_context=None):
+        response = super(PageAdmin, self).changelist_view(request, extra_context=None)
+        return response
 
 
 # Drop the meta data fields, and move slug towards the stop.

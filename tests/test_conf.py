@@ -198,6 +198,7 @@ class ConfTests(TestCase):
         if settings.USE_MODELTRANSLATION:
             self.assertTrue(settings.USE_I18N)
 
+    
     def test_editable_caching(self):
         """
         Test the editable setting caching behavior.

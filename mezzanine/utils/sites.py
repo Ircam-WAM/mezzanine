@@ -38,31 +38,41 @@ def current_site_id():
     from mezzanine.utils.cache import cache_get, cache_installed, cache_set
 
     request = current_request()
-    site_id = getattr(request, "site_id", None)
-    if request and not site_id:
-        site_id = request.session.get("site_id", None)
-        if not site_id:
-            domain = request.get_host().lower()
-            if cache_installed():
-                # Don't use Mezzanine's cache_key_prefix here, since it
-                # uses this very function we're in right now to create a
-                # per-site cache key.
-                bits = (settings.CACHE_MIDDLEWARE_KEY_PREFIX, domain)
-                cache_key = "%s.site_id.%s" % bits
-                site_id = cache_get(cache_key)
+    if settings.MULTIPLE_DOMAIN_SETTING_ALLOWED:
+        site_id = getattr(request, "site_id", None)
+
+        if request and not site_id:
+            site_id = request.session.get("site_id", None)
             if not site_id:
-                try:
-                    site = Site.objects.get(domain__iexact=domain)
-                except Site.DoesNotExist:
-                    pass
-                else:
-                    site_id = site.id
-                    if cache_installed():
-                        cache_set(cache_key, site_id)
-    if not site_id:
-        site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
-    if request and site_id and not getattr(settings, "TESTING", False):
-        request.site_id = site_id
+                domain = request.get_host().lower()
+                if cache_installed():
+                    # Don't use Mezzanine's cache_key_prefix here, since it
+                    # uses this very function we're in right now to create a
+                    # per-site cache key.
+                    bits = (settings.CACHE_MIDDLEWARE_KEY_PREFIX, domain)
+                    cache_key = "%s.site_id.%s" % bits
+                    site_id = cache_get(cache_key)
+                if not site_id:
+                    try:
+                        site = Site.objects.get(domain__iexact=domain)
+                    except Site.DoesNotExist:
+                        pass
+                    else:
+                        site_id = site.id
+                        if cache_installed():
+                            cache_set(cache_key, site_id)
+        # Executed when application is restarting
+        if not site_id and settings.DEBUG:
+            # FIXME: settings.DEBUG condition added to allow multiple site_id
+            # against multiple settings.HOST_THEMES in production
+            site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
+        if request and site_id and not getattr(settings, "TESTING", False):
+            request.site_id = site_id
+    else:
+        try:
+            site_id = Site.objects.get(domain=request.environ["HTTP_HOST"]).id
+        except Exception:
+            site_id = os.environ.get("MEZZANINE_SITE_ID", settings.SITE_ID)
     return site_id
 
 
@@ -110,9 +120,10 @@ def host_theme_path():
     domain = None
 
     for (host, theme) in settings.HOST_THEMES:
-        if domain is None:
-            domain = Site.objects.get(id=current_site_id()).domain
-        if host.lower() == domain.lower():
+        current_site = current_site_id()
+        if domain is None and current_site:
+            domain = Site.objects.get(id=current_site).domain
+        if (current_site is None) or (host.lower() == domain.lower()):
             try:
                 __import__(theme)
                 module = sys.modules[theme]

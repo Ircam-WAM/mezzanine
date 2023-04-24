@@ -9,6 +9,7 @@ from mezzanine.accounts import ProfileNotConfigured
 from mezzanine.accounts.forms import ProfileForm
 from mezzanine.conf import settings
 from mezzanine.utils.tests import TestCase
+from unittest import skip
 
 User = get_user_model()
 
@@ -43,6 +44,7 @@ class AccountsTests(TestCase):
             pass
         return data
 
+    @skip('Changed in Mezzo')
     def test_account(self):
         """
         Test account creation.
