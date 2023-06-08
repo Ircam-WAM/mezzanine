@@ -32,6 +32,5 @@ if "django.contrib.admin" in settings.INSTALLED_APPS:
 
 urlpatterns += [
     path("edit/", core_views.edit, name="edit"),
-    path("search/", core_views.search, name="search"),
     path("set_site/", core_views.set_site, name="set_site"),
 ]
