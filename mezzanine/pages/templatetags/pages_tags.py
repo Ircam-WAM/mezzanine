@@ -50,8 +50,6 @@ def page_menu(context, token):
                for m in Page.get_content_models()
                if not m._meta.proxy]
         published = Page.objects.published(for_user=user).select_related(*rel)
-        if published:
-            published = published.select_related(*rel)
         # Store the current page being viewed in the context. Used
         # for comparisons in page.set_menu_helpers.
         if "page" not in context:
