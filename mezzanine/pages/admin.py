@@ -20,7 +20,6 @@ from mezzanine.utils.urls import clean_slashes
 page_fieldsets = deepcopy(DisplayableAdmin.fieldsets)
 if settings.PAGE_MENU_TEMPLATES:
     page_fieldsets[0][1]["fields"] += ("in_menus",)
-    page_fieldsets[0][1]["fields"] += ("user",)
 page_fieldsets[0][1]["fields"] += ("login_required",)
 
 
@@ -47,6 +46,7 @@ class PageAdmin(TeamOwnableAdmin, ContentTypedAdmin, DisplayableAdmin):
     form = PageAdminForm
     fieldsets = page_fieldsets
     change_list_template = "admin/pages/page/change_list.html"
+    readonly_fields = ['user',]
 
     def check_permission(self, request, page, permission):
         """
