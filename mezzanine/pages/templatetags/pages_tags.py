@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.template import TemplateSyntaxError, Variable
 from django.template.loader import get_template
@@ -21,6 +23,12 @@ def page_menu(context, token):
     """
     # First arg could be the menu template file name, or the parent page.
     # Also allow for both to be used.
+
+    cache_key = "page_menu"
+    cached_value = cache.get(cache_key)
+    if cached_value:
+        return cache.get(cache_key)
+
     template_name = None
     parent_page = None
     parts = token.split_contents()[1:]
@@ -50,6 +58,7 @@ def page_menu(context, token):
                for m in Page.get_content_models()
                if not m._meta.proxy]
         published = Page.objects.published(for_user=user).select_related(*rel)
+
         # Store the current page being viewed in the context. Used
         # for comparisons in page.set_menu_helpers.
         if "page" not in context:
@@ -128,7 +137,9 @@ def page_menu(context, token):
             context["page_branch_in_footer"] = True
 
     t = get_template(template_name)
-    return t.render(context.flatten())
+    rendering = t.render(context.flatten())
+    cache.set(cache_key, rendering, settings.CACHE_TIMEOUT)
+    return rendering
 
 
 @register.as_tag
