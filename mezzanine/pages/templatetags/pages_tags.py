@@ -24,10 +24,11 @@ def page_menu(context, token):
     # First arg could be the menu template file name, or the parent page.
     # Also allow for both to be used.
 
-    cache_key = "page_menu"
-    cached_value = cache.get(cache_key)
-    if cached_value:
-        return cache.get(cache_key)
+    if settings.CACHE_TIMEOUT:
+        cache_key = "page_menu"
+        cached_value = cache.get(cache_key)
+        if cached_value:
+            return cache.get(cache_key)
 
     template_name = None
     parent_page = None
@@ -138,7 +139,10 @@ def page_menu(context, token):
 
     t = get_template(template_name)
     rendering = t.render(context.flatten())
-    cache.set(cache_key, rendering, settings.CACHE_TIMEOUT)
+
+    if settings.CACHE_TIMEOUT:
+        cache.set(cache_key, rendering, settings.CACHE_TIMEOUT)
+
     return rendering
 
 
