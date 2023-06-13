@@ -24,14 +24,10 @@ def page_menu(context, token):
     # First arg could be the menu template file name, or the parent page.
     # Also allow for both to be used.
 
-    if settings.CACHE_TIMEOUT:
-        cache_key = "page_menu"
-        cached_value = cache.get(cache_key)
-        if cached_value:
-            return cache.get(cache_key)
-
     template_name = None
     parent_page = None
+    cache_key = "page_menu"
+
     parts = token.split_contents()[1:]
     for part in parts:
         part = Variable(part).resolve(context)
@@ -46,6 +42,7 @@ def page_menu(context, token):
             error = "No template found for page_menu in: %s" % parts
             raise TemplateSyntaxError(error)
     context["menu_template_name"] = template_name
+
     if "menu_pages" not in context:
         try:
             user = context["request"].user
@@ -58,7 +55,13 @@ def page_menu(context, token):
         rel = [m.__name__.lower()
                for m in Page.get_content_models()
                if not m._meta.proxy]
-        published = Page.objects.published(for_user=user).select_related(*rel)
+
+        cache_value = cache.get(cache_key)
+        if cache_value and settings.CACHE_TIMEOUT:
+            published = cache_value
+        else:
+            published = Page.objects.published(for_user=user).select_related(*rel).order_by("_order")
+            cache.set(cache_key, published, settings.CACHE_TIMEOUT)
 
         # Store the current page being viewed in the context. Used
         # for comparisons in page.set_menu_helpers.
@@ -84,7 +87,7 @@ def page_menu(context, token):
         # page.set_menu_helpers.
         context.dicts[0]["_parent_page_ids"] = {}
         pages = defaultdict(list)
-        for page in published.order_by("_order"):
+        for page in published:
             page.set_helpers(context)
             context["_parent_page_ids"][page.id] = page.parent_id
             setattr(page, "num_children", num_children(page.id))
@@ -138,12 +141,7 @@ def page_menu(context, token):
             context["page_branch_in_footer"] = True
 
     t = get_template(template_name)
-    rendering = t.render(context.flatten())
-
-    if settings.CACHE_TIMEOUT:
-        cache.set(cache_key, rendering, settings.CACHE_TIMEOUT)
-
-    return rendering
+    return t.render(context.flatten())
 
 
 @register.as_tag
